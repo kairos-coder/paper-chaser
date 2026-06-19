@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Chaser — The Survey Arena</title>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --surface: #1a1a1a;
+            --surface2: #242424;
+            --border: #333;
+            --text: #e0e0e0;
+            --text-secondary: #999;
+            --accent: #ff6b35;
+            --accent-glow: #ff6b3544;
+            --green: #4ade80;
+            --green-glow: #4ade8044;
+            --blue: #60a5fa;
+            --yellow: #fbbf24;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── HEADER ─────────────────────────── */
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-icon {
+            font-size: 1.6rem;
+        }
+        .logo-accent {
+            color: var(--accent);
+        }
+        .header-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stat-pill {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .stat-value {
+            font-weight: 600;
+            color: var(--green);
+        }
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        /* ── MAIN LAYOUT ──────────────────── */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+        }
+        @media (max-width: 1000px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── ARENA (iframe grid) ──────────── */
+        .arena {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .arena-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .arena-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+        .btn:hover {
+            background: #333;
+            border-color: #555;
+        }
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background: #ff8255;
+            border-color: #ff8255;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.78rem;
+        }
+        .btn-danger {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        .btn-danger:hover {
+            background: #ef444422;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 14px;
+        }
+
+        /* ── PLATFORM CARD ────────────────── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all var(--transition);
+            position: relative;
+        }
+        .card.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+        .card-platform {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .platform-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .dot-swagbucks {
+            background: #4ade80;
+        }
+        .card-actions {
+            display: flex;
+            gap: 4px;
+        }
+        .card-iframe-wrap {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 75%;
+            display: none;
+        }
+        .card.open .card-iframe-wrap {
+            display: block;
+        }
+        .card-iframe-wrap iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+        }
+        .card-body {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .card-balance-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .card-balance {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .card-label {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .card-input-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .card-input {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 7px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            width: 90px;
+            font-family: inherit;
+            transition: border-color var(--transition);
+        }
+        .card-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .card-input::placeholder {
+            color: #555;
+        }
+        .card-threshold {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .threshold-met {
+            color: var(--green);
+        }
+        .threshold-pending {
+            color: var(--yellow);
+        }
+
+        /* ── DASHBOARD SIDEBAR ────────────── */
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .dash-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+        .dash-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .time-filters {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .time-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            transition: all var(--transition);
+        }
+        .time-btn.active-filter {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            font-weight: 600;
+        }
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ffffff08;
+        }
+        .metric-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 140px;
+            margin-top: 8px;
+        }
+        .chart-container canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .breakdown-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #ffffff06;
+        }
+        .breakdown-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        /* ── TOAST ─────────────────────────── */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ── MODAL ─────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            max-width: 440px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .modal h3 {
+            font-size: 1.1rem;
+        }
+        .modal label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .modal input,
+        .modal select {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        .modal input:focus,
+        .modal select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        /* ── EMPTY STATE ──────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+        }
+        .empty-state-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* ── RESPONSIVE ───────────────────── */
+        @media (max-width: 600px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header-stats {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── HEADER ────────────────────────────── -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <span class="logo-icon">📄</span>
+                <span>Paper <span class="logo-accent">Chaser</span></span>
+            </div>
+            <div class="header-stats" id="headerStats">
+                <div class="stat-pill">
+                    <span class="stat-label">Today</span>
+                    <span class="stat-value" id="headerToday">$0.00</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-label">This Week</span>
+                    <span class="stat-value" id="headerWeek">$0.00</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-label">This Month</span>
+                    <span class="stat-value" id="headerMonth">$0.00</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-label">Total</span>
+                    <span class="stat-value" id="headerTotal">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── MAIN LAYOUT ──────────────────────── -->
+    <div class="main-container">
+        <!-- ARENA -->
+        <section class="arena">
+            <div class="arena-header">
+                <span class="arena-title">🏟️ The Arena</span>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="openAddPlatformModal()">+ Add Platform</button>
+                    <button class="btn" onclick="exportData()">📥 Export</button>
+                    <button class="btn" onclick="document.getElementById('importFile').click()">📤 Import</button>
+                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+                </div>
+            </div>
+            <div class="cards-grid" id="cardsGrid">
+                <!-- Cards rendered by JS -->
+            </div>
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <div class="empty-state-icon">🏟️</div>
+                <p>No platforms yet. Add your first survey platform to start tracking.</p>
+                <button class="btn btn-primary" style="margin-top:12px;" onclick="openAddPlatformModal()">+ Add Platform</button>
+            </div>
+        </section>
+
+        <!-- DASHBOARD SIDEBAR -->
+        <aside class="dashboard">
+            <div class="dash-card">
+                <div class="dash-title">📊 Earnings Breakdown</div>
+                <div class="time-filters" id="timeFilters">
+                    <button class="time-btn active-filter" data-filter="today">Today</button>
+                    <button class="time-btn" data-filter="week">This Week</button>
+                    <button class="time-btn" data-filter="month">This Month</button>
+                    <button class="time-btn" data-filter="total">Total</button>
+                </div>
+                <div style="margin-top:12px;">
+                    <div class="metric-row">
+                        <span>Completed</span>
+                        <span class="metric-value" id="dashCompleted" style="color:var(--green);">$0.00</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>Pending</span>
+                        <span class="metric-value" id="dashPending" style="color:var(--yellow);">$0.00</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>Bonuses</span>
+                        <span class="metric-value" id="dashBonuses" style="color:var(--blue);">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-card">
+                <div class="dash-title">🥧 Platform Split</div>
+                <div class="chart-container">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+                <div class="breakdown-list" id="platformBreakdown">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <div class="dash-card">
+                <div class="dash-title">📈 Daily Trend (7 days)</div>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ── ADD PLATFORM MODAL ──────────────── -->
+    <div class="modal-overlay" id="addPlatformModal" style="display:none;">
+        <div class="modal">
+            <h3>Add Survey Platform</h3>
+            <label>Platform Name
+                <input type="text" id="newPlatformName" placeholder="e.g., Swagbucks, Survey Junkie...">
+            </label>
+            <label>Survey URL (optional — for iframe arena)
+                <input type="url" id="newPlatformUrl" placeholder="https://www.swagbucks.com/surveys">
+            </label>
+            <label>Payout Threshold ($)
+                <input type="number" id="newPlatformThreshold" placeholder="10.00" step="0.01" min="0" value="10.00">
+            </label>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeAddPlatformModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addPlatform()">Add Platform</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── TOAST CONTAINER ──────────────────── -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ──────────────────────────────────────
+        // PAPER CHASER · CORE ENGINE
+        // ──────────────────────────────────────
+        const STORAGE_KEY = 'paperchaser_data_v1';
+
+        // Default data structure
+        function getDefaultData() {
+            return {
+                platforms: [
+                    {
+                        id: 'platform_1',
+                        name: 'Swagbucks',
+                        url: 'https://www.swagbucks.com/surveys',
+                        threshold: 10.00,
+                        color: '#4ade80',
+                        balance: 0,
+                        pending: 0,
+                        bonuses: 0,
+                        transactions: [],
+                        createdAt: new Date().toISOString(),
+                    },
+                ],
+            };
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const data = JSON.parse(raw);
+                    // Ensure all platforms have the expected fields
+                    data.platforms = data.platforms.map(p => ({
+                        id: p.id || 'platform_' + Date.now() + Math.random().toString(36).substr(2, 5),
+                        name: p.name || 'Unknown',
+                        url: p.url || '',
+                        threshold: p.threshold ?? 10.00,
+                        color: p.color || getRandomColor(),
+                        balance: p.balance ?? 0,
+                        pending: p.pending ?? 0,
+                        bonuses: p.bonuses ?? 0,
+                        transactions: p.transactions || [],
+                        createdAt: p.createdAt || new Date().toISOString(),
+                    }));
+                    return data;
+                }
+            } catch (e) {
+                console.error('Failed to load data:', e);
+            }
+            return getDefaultData();
+        }
+
+        // Save data to localStorage
+        function saveData(data) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                showToast('⚠️ Storage full — please export your data');
+            }
+        }
+
+        function getRandomColor() {
+            const colors = ['#4ade80', '#60a5fa', '#fbbf24', '#f87171', '#a78bfa', '#34d399', '#fb923c',
+            '#38bdf8'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        let appData = loadData();
+        let activeTimeFilter = 'today';
+        let chartInstances = {};
+
+        // ── TOAST ──────────────────────────────
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // ── DATA HELPERS ──────────────────────
+        function getPlatformById(id) {
+            return appData.platforms.find(p => p.id === id);
+        }
+
+        function addTransaction(platformId, amount, type) {
+            const platform = getPlatformById(platformId);
+            if (!platform) return;
+            const tx = {
+                id: 'tx_' + Date.now() + Math.random().toString(36).substr(2, 4),
+                amount: parseFloat(amount) || 0,
+                type: type, // 'completed', 'pending', 'bonus'
+                date: new Date().toISOString(),
+            };
+            platform.transactions.push(tx);
+            // Update running totals
+            if (type === 'completed') platform.balance += tx.amount;
+            if (type === 'pending') platform.pending += tx.amount;
+            if (type === 'bonus') platform.bonuses += tx.amount;
+            saveData(appData);
+            renderAll();
+            showToast(
+                `✅ $${tx.amount.toFixed(2)} ${type} added to ${platform.name}`
+            );
+        }
+
+        function removeTransaction(platformId, txId) {
+            const platform = getPlatformById(platformId);
+            if (!platform) return;
+            const txIndex = platform.transactions.findIndex(t => t.id === txId);
+            if (txIndex === -1) return;
+            const tx = platform.transactions[txIndex];
+            // Reverse the balance impact
+            if (tx.type === 'completed') platform.balance -= tx.amount;
+            if (tx.type === 'pending') platform.pending -= tx.amount;
+            if (tx.type === 'bonus') platform.bonuses -= tx.amount;
+            // Clamp to 0
+            platform.balance = Math.max(0, platform.balance);
+            platform.pending = Math.max(0, platform.pending);
+            platform.bonuses = Math.max(0, platform.bonuses);
+            platform.transactions.splice(txIndex, 1);
+            saveData(appData);
+            renderAll();
+            showToast(`🗑️ Transaction removed from ${platform.name}`);
+        }
+
+        function getFilteredEarnings(platform, filter) {
+            const now = new Date();
+            const txs = platform.transactions || [];
+            let filtered = txs;
+            if (filter === 'today') {
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                filtered = txs.filter(t => new Date(t.date) >= todayStart);
+            } else if (filter === 'week') {
+                const dayOfWeek = now.getDay();
+                const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek);
+                filtered = txs.filter(t => new Date(t.date) >= weekStart);
+            } else if (filter === 'month') {
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                filtered = txs.filter(t => new Date(t.date) >= monthStart);
+            }
+            const completed = filtered.filter(t => t.type === 'completed').reduce((s, t) => s + t.amount, 0);
+            const pending = filtered.filter(t => t.type === 'pending').reduce((s, t) => s + t.amount, 0);
+            const bonuses = filtered.filter(t => t.type === 'bonus').reduce((s, t) => s + t.amount, 0);
+            return { completed, pending, bonuses, total: completed + pending + bonuses };
+        }
+
+        function getDailyBreakdown(platform, days = 7) {
+            const result = [];
+            const now = new Date();
+            for (let i = days - 1; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+                const dayStart = new Date(d);
+                const dayEnd = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+                const dayTxs = (platform.transactions || []).filter(t => {
+                    const td = new Date(t.date);
+                    return td >= dayStart && td < dayEnd;
+                });
+                const total = dayTxs.reduce((s, t) => s + t.amount, 0);
+                result.push({
+                    date: d.toLocaleDateString('en-US', { weekday: 'short', month: 'short',
+                        day: 'numeric' }),
+                    total,
+                });
+            }
+            return result;
+        }
+
+        // ── RENDER ─────────────────────────────
+        function renderAll() {
+            renderCards();
+            renderDashboard();
+            renderCharts();
+            updateHeaderStats();
+        }
+
+        function renderCards() {
+            const grid = document.getElementById('cardsGrid');
+            const emptyState = document.getElementById('emptyState');
+            if (appData.platforms.length === 0) {
+                grid.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            emptyState.style.display = 'none';
+            grid.innerHTML = appData.platforms.map(p => {
+                const thresholdMet = p.balance >= p.threshold;
+                const thresholdClass = thresholdMet ? 'threshold-met' : 'threshold-pending';
+                const thresholdIcon = thresholdMet ? '✅' : '⏳';
+                const recentTxs = (p.transactions || []).slice(-5).reverse();
+                return `
+                <div class="card ${p._open ? 'open' : ''}" id="card-${p.id}">
+                  <div class="card-header" onclick="toggleCard('${p.id}')">
+                    <div class="card-platform">
+                      <span class="platform-dot" style="background:${p.color};"></span>
+                      ${escapeHtml(p.name)}
+                    </div>
+                    <div class="card-actions">
+                      <span class="card-threshold ${thresholdClass}">${thresholdIcon} $${p.threshold.toFixed(2)}</span>
+                      <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removePlatform('${p.id}')" title="Remove">✕</button>
+                    </div>
+                  </div>
+                  ${p.url ? `
+                  <div class="card-iframe-wrap">
+                    <iframe src="${escapeHtml(p.url)}" 
+                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
+                            loading="lazy"
+                            title="${escapeHtml(p.name)} survey arena">
+                    </iframe>
+                  </div>` : ''}
+                  <div class="card-body">
+                    <div class="card-balance-row">
+                      <div>
+                        <div class="card-label">Balance</div>
+                        <div class="card-balance">$${p.balance.toFixed(2)}</div>
+                      </div>
+                      <div>
+                        <div class="card-label">Pending</div>
+                        <div style="color:var(--yellow);font-weight:600;">$${p.pending.toFixed(2)}</div>
+                      </div>
+                      <div>
+                        <div class="card-label">Bonuses</div>
+                        <div style="color:var(--blue);font-weight:600;">$${p.bonuses.toFixed(2)}</div>
+                      </div>
+                    </div>
+                    <div class="card-input-group">
+                      <input type="number" class="card-input" id="input-${p.id}" placeholder="Amount" step="0.01" min="0.01">
+                      <button class="btn btn-sm" style="color:var(--green);border-color:var(--green);" onclick="addEarnings('${p.id}', 'completed')">✓ Done</button>
+                      <button class="btn btn-sm" style="color:var(--yellow);border-color:var(--yellow);" onclick="addEarnings('${p.id}', 'pending')">⏳ Pend</button>
+                      <button class="btn btn-sm" style="color:var(--blue);border-color:var(--blue);" onclick="addEarnings('${p.id}', 'bonus')">🎁 Bonus</button>
+                    </div>
+                    ${recentTxs.length > 0 ? `
+                    <div style="margin-top:6px;">
+                      <div class="card-label" style="margin-bottom:4px;">Recent</div>
+                      ${recentTxs.map(tx => `
+                        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;padding:3px 0;border-bottom:1px solid #ffffff06;">
+                          <span style="color:${tx.type==='completed'?'var(--green)':tx.type==='pending'?'var(--yellow)':'var(--blue)'};">${tx.type}</span>
+                          <span>$${tx.amount.toFixed(2)}</span>
+                          <span style="color:var(--text-secondary);">${new Date(tx.date).toLocaleDateString()}</span>
+                          <button class="btn btn-sm" style="padding:1px 5px;font-size:0.7rem;color:#ef4444;" onclick="removeTransaction('${p.id}','${tx.id}')">✕</button>
+                        </div>
+                      `).join('')}
+                    </div>` : '<div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;">No transactions yet</div>'}
+                  </div>
+                </div>
+              `;
+            }).join('');
+        }
+
+        function toggleCard(id) {
+            const platform = getPlatformById(id);
+            if (!platform) return;
+            platform._open = !platform._open;
+            saveData(appData);
+            renderCards();
+        }
+
+        function addEarnings(platformId, type) {
+            const input = document.getElementById('input-' + platformId);
+            if (!input) return;
+            const amount = parseFloat(input.value);
+            if (isNaN(amount) || amount <= 0) {
+                showToast('⚠️ Please enter a valid amount');
+                return;
+            }
+            addTransaction(platformId, amount, type);
+            input.value = '';
+            input.focus();
+        }
+
+        function removePlatform(id) {
+            if (!confirm('Remove this platform? All data will be lost.')) return;
+            appData.platforms = appData.platforms.filter(p => p.id !== id);
+            saveData(appData);
+            renderAll();
+            showToast('🗑️ Platform removed');
+        }
+
+        function updateHeaderStats() {
+            const allPlatforms = appData.platforms;
+            const calc = (filter) => {
+                let c = 0,
+                    p = 0,
+                    b = 0;
+                allPlatforms.forEach(pl => {
+                    const e = getFilteredEarnings(pl, filter);
+                    c += e.completed;
+                    p += e.pending;
+                    b += e.bonuses;
+                });
+                return c + p + b;
+            };
+            document.getElementById('headerToday').textContent = '$' + calc('today').toFixed(2);
+            document.getElementById('headerWeek').textContent = '$' + calc('week').toFixed(2);
+            document.getElementById('headerMonth').textContent = '$' + calc('month').toFixed(2);
+            document.getElementById('headerTotal').textContent = '$' + allPlatforms.reduce((s, pl) => s + pl
+                .balance + pl.pending + pl.bonuses, 0).toFixed(2);
+        }
+
+        function renderDashboard() {
+            const allPlatforms = appData.platforms;
+            const calc = (filter) => {
+                let c = 0,
+                    p = 0,
+                    b = 0;
+                allPlatforms.forEach(pl => {
+                    const e = getFilteredEarnings(pl, filter);
+                    c += e.completed;
+                    p += e.pending;
+                    b += e.bonuses;
+                });
+                return { completed: c, pending: p, bonuses: b };
+            };
+            const earnings = calc(activeTimeFilter);
+            document.getElementById('dashCompleted').textContent = '$' + earnings.completed.toFixed(2);
+            document.getElementById('dashPending').textContent = '$' + earnings.pending.toFixed(2);
+            document.getElementById('dashBonuses').textContent = '$' + earnings.bonuses.toFixed(2);
+
+            // Platform breakdown list
+            const breakdownDiv = document.getElementById('platformBreakdown');
+            breakdownDiv.innerHTML = allPlatforms.map(p => {
+                const e = getFilteredEarnings(p, activeTimeFilter);
+                return `
+                <div class="breakdown-item">
+                  <span><span class="breakdown-dot" style="background:${p.color};"></span>${escapeHtml(p.name)}</span>
+                  <span style="font-weight:600;">$${e.total.toFixed(2)}</span>
+                </div>
+              `;
+            }).join('');
+        }
+
+        function renderCharts() {
+            renderDoughnutChart();
+            renderBarChart();
+        }
+
+        function renderDoughnutChart() {
+            const canvas = document.getElementById('doughnutChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (chartInstances.doughnut) chartInstances.doughnut.destroy();
+            const allPlatforms = appData.platforms;
+            const labels = allPlatforms.map(p => p.name);
+            const data = allPlatforms.map(p => getFilteredEarnings(p, activeTimeFilter).total);
+            const colors = allPlatforms.map(p => p.color);
+            // Use a simple canvas-based doughnut since we have no Chart.js CDN
+            // We'll draw a simple representation
+            drawSimpleDoughnut(ctx, data, colors, labels);
+        }
+
+        function drawSimpleDoughnut(ctx, data, colors, labels) {
+            const w = ctx.canvas.width = ctx.canvas.parentElement.clientWidth || 200;
+            const h = ctx.canvas.height = 140;
+            ctx.clearRect(0, 0, w, h);
+            const total = data.reduce((s, v) => s + v, 0);
+            if (total === 0) {
+                ctx.fillStyle = '#999';
+                ctx.font = '12px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data yet', w / 2, h / 2);
+                return;
+            }
+            const cx = 50,
+                cy = h / 2,
+                radius = 45,
+                innerRadius = 28;
+            let startAngle = -Math.PI / 2;
+            data.forEach((val, i) => {
+                if (val === 0) return;
+                const sliceAngle = (val / total) * Math.PI * 2;
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, startAngle, startAngle + sliceAngle);
+                ctx.arc(cx, cy, innerRadius, startAngle + sliceAngle, startAngle, true);
+                ctx.closePath();
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                startAngle += sliceAngle;
+            });
+            // Legend
+            let ly = 10;
+            labels.forEach((label, i) => {
+                if (data[i] === 0) return;
+                ctx.fillStyle = colors[i];
+                ctx.fillRect(w - 100, ly, 10, 10);
+                ctx.fillStyle = '#e0e0e0';
+                ctx.font = '10px Inter, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(`${label}: $${data[i].toFixed(2)}`, w - 86, ly + 9);
+                ly += 16;
+            });
+        }
+
+        function renderBarChart() {
+            const canvas = document.getElementById('barChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = ctx.canvas.width = ctx.canvas.parentElement.clientWidth || 200;
+            const h = ctx.canvas.height = 140;
+            ctx.clearRect(0, 0, w, h);
+            // Aggregate daily totals across all platforms
+            const allPlatforms = appData.platforms;
+            const days = 7;
+            const aggregated = [];
+            const now = new Date();
+            for (let i = days - 1; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+                const dayStart = new Date(d);
+                const dayEnd = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+                let total = 0;
+                allPlatforms.forEach(p => {
+                    (p.transactions || []).forEach(t => {
+                        const td = new Date(t.date);
+                        if (td >= dayStart && td < dayEnd) total += t.amount;
+                    });
+                });
+                aggregated.push({
+                    label: d.toLocaleDateString('en-US', { weekday: 'short' }),
+                    total,
+                });
+            }
+            const maxVal = Math.max(...aggregated.map(d => d.total), 1);
+            const barWidth = (w - 60) / days - 4;
+            const chartBottom = h - 20;
+            const chartTop = 15;
+            const chartHeight = chartBottom - chartTop;
+            // Axes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(35, chartTop);
+            ctx.lineTo(35, chartBottom);
+            ctx.lineTo(w - 10, chartBottom);
+            ctx.stroke();
+            // Bars
+            aggregated.forEach((d, i) => {
+                const x = 38 + i * ((w - 60) / days);
+                const barH = (d.total / maxVal) * chartHeight;
+                const y = chartBottom - barH;
+                // Gradient
+                const grad = ctx.createLinearGradient(x, y, x, chartBottom);
+                grad.addColorStop(0, '#ff6b35');
+                grad.addColorStop(1, '#ff6b3522');
+                ctx.fillStyle = grad;
+                ctx.fillRect(x, y, barWidth, barH);
+                // Label
+                ctx.fillStyle = '#999';
+                ctx.font = '9px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(d.label, x + barWidth / 2, chartBottom + 12);
+                // Value on top
+                if (d.total > 0) {
+                    ctx.fillStyle = '#e0e0e0';
+                    ctx.fillText('$' + d.total.toFixed(2), x + barWidth / 2, y - 4);
+                }
+            });
+        }
+
+        // ── MODALS ─────────────────────────────
+        function openAddPlatformModal() {
+            document.getElementById('addPlatformModal').style.display = 'flex';
+            document.getElementById('newPlatformName').focus();
+        }
+
+        function closeAddPlatformModal() {
+            document.getElementById('addPlatformModal').style.display = 'none';
+            document.getElementById('newPlatformName').value = '';
+            document.getElementById('newPlatformUrl').value = '';
+            document.getElementById('newPlatformThreshold').value = '10.00';
+        }
+
+        function addPlatform() {
+            const nameInput = document.getElementById('newPlatformName');
+            const urlInput = document.getElementById('newPlatformUrl');
+            const thresholdInput = document.getElementById('newPlatformThreshold');
+            const name = nameInput.value.trim();
+            if (!name) {
+                showToast('⚠️ Please enter a platform name');
+                return;
+            }
+            const platform = {
+                id: 'platform_' + Date.now() + Math.random().toString(36).substr(2, 5),
+                name,
+                url: urlInput.value.trim(),
+                threshold: parseFloat(thresholdInput.value) || 10.00,
+                color: getRandomColor(),
+                balance: 0,
+                pending: 0,
+                bonuses: 0,
+                transactions: [],
+                createdAt: new Date().toISOString(),
+            };
+            appData.platforms.push(platform);
+            saveData(appData);
+            closeAddPlatformModal();
+            renderAll();
+            showToast(`✅ ${name} added to the arena`);
+        }
+
+        // ── IMPORT / EXPORT ────────────────────
+        function exportData() {
+            const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'paperchaser-backup-' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('📥 Data exported');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (!imported.platforms || !Array.isArray(imported.platforms)) {
+                        throw new Error('Invalid format');
+                    }
+                    if (!confirm(
+                            `Import ${imported.platforms.length} platform(s)? This will replace current data.`
+                            )) return;
+                    appData = imported;
+                    // Ensure all platforms have required fields
+                    appData.platforms = appData.platforms.map(p => ({
+                        id: p.id || 'platform_' + Date.now() + Math.random().toString(36).substr(
+                            2, 5),
+                        name: p.name || 'Unknown',
+                        url: p.url || '',
+                        threshold: p.threshold ?? 10.00,
+                        color: p.color || getRandomColor(),
+                        balance: p.balance ?? 0,
+                        pending: p.pending ?? 0,
+                        bonuses: p.bonuses ?? 0,
+                        transactions: p.transactions || [],
+                        createdAt: p.createdAt || new Date().toISOString(),
+                    }));
+                    saveData(appData);
+                    renderAll();
+                    showToast('📤 Data imported successfully');
+                } catch (err) {
+                    showToast('⚠️ Invalid backup file');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ── EVENT LISTENERS ────────────────────
+        document.getElementById('timeFilters').addEventListener('click', function(e) {
+            if (e.target.classList.contains('time-btn')) {
+                document.querySelectorAll('.time-btn').forEach(b => b.classList.remove(
+                    'active-filter'));
+                e.target.classList.add('active-filter');
+                activeTimeFilter = e.target.dataset.filter;
+                renderDashboard();
+                renderCharts();
+            }
+        });
+
+        // Close modal on overlay click
+        document.getElementById('addPlatformModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAddPlatformModal();
+        });
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeAddPlatformModal();
+        });
+
+        // Handle window resize for charts
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (chartInstances.doughnut) chartInstances.doughnut.destroy();
+                if (chartInstances.bar) chartInstances.bar.destroy();
+                chartInstances = {};
+                renderCharts();
+            }, 250);
+        });
+
+        // ── INIT ───────────────────────────────
+        function init() {
+            renderAll();
+            console.log('📄 Paper Chaser initialized');
+            console.log('   Platforms:', appData.platforms.length);
+            console.log('   Total earnings: $' + appData.platforms.reduce((s, p) => s + p.balance + p.pending + p
+                .bonuses, 0).toFixed(2));
+            console.log('   Data stored in localStorage:', STORAGE_KEY);
+            console.log('   🏟️ The arena is ready.');
+        }
+
+        init();
+    </script>
+</body>
+</html>
