@@ -3,24 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paper Chaser — The Survey Arena</title>
+    <title>Paper Chaser</title>
     <style>
         :root {
-            --bg: #0f0f0f;
-            --surface: #1a1a1a;
-            --surface2: #242424;
-            --border: #333;
-            --text: #e0e0e0;
-            --text-secondary: #999;
+            --bg: #0d0d0d;
+            --surface: #161616;
+            --surface2: #1e1e1e;
+            --surface3: #262626;
+            --border: #2a2a2a;
+            --border-light: #333;
+            --text: #d4d4d4;
+            --text-secondary: #888;
+            --text-muted: #666;
             --accent: #ff6b35;
-            --accent-glow: #ff6b3544;
+            --accent-hover: #ff8255;
+            --accent-glow: #ff6b3522;
             --green: #4ade80;
-            --green-glow: #4ade8044;
-            --blue: #60a5fa;
+            --green-dim: #4ade8033;
             --yellow: #fbbf24;
-            --radius: 12px;
-            --radius-sm: 8px;
-            --transition: 0.2s ease;
+            --yellow-dim: #fbbf2433;
+            --blue: #60a5fa;
+            --blue-dim: #60a5fa33;
+            --red: #ef4444;
+            --red-dim: #ef444433;
+            --sidebar-width: 220px;
+            --status-height: 32px;
+            --quicklog-height: 48px;
+            --toolbar-height: 40px;
+            --radius: 8px;
+            --radius-sm: 5px;
+            --transition: 0.18s ease;
+            --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
         }
 
         * {
@@ -28,307 +42,440 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        html,
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            font-family: var(--font);
             background: var(--bg);
             color: var(--text);
-            min-height: 100vh;
-            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ── HEADER ─────────────────────────── */
-        .header {
+        /* ── TOP TITLE BAR ─────────────────── */
+        .titlebar {
+            height: 36px;
             background: var(--surface);
             border-bottom: 1px solid var(--border);
-            padding: 16px 24px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(12px);
-        }
-        .header-inner {
-            max-width: 1400px;
-            margin: 0 auto;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .logo {
-            font-size: 1.4rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .logo-icon {
-            font-size: 1.6rem;
-        }
-        .logo-accent {
-            color: var(--accent);
-        }
-        .header-stats {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .stat-pill {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 6px 14px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-        }
-        .stat-value {
-            font-weight: 600;
-            color: var(--green);
-        }
-        .stat-label {
-            color: var(--text-secondary);
-        }
-
-        /* ── MAIN LAYOUT ──────────────────── */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px 24px;
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 20px;
-        }
-        @media (max-width: 1000px) {
-            .main-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ── ARENA (iframe grid) ──────────── */
-        .arena {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .arena-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            padding: 0 12px;
             gap: 10px;
-        }
-        .arena-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        .btn {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 8px 16px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all var(--transition);
-            white-space: nowrap;
-        }
-        .btn:hover {
-            background: #333;
-            border-color: #555;
-        }
-        .btn-primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #000;
-            font-weight: 600;
-        }
-        .btn-primary:hover {
-            background: #ff8255;
-            border-color: #ff8255;
-        }
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.78rem;
-        }
-        .btn-danger {
-            border-color: #ef4444;
-            color: #ef4444;
-        }
-        .btn-danger:hover {
-            background: #ef444422;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 14px;
-        }
-
-        /* ── PLATFORM CARD ────────────────── */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-            transition: all var(--transition);
-            position: relative;
-        }
-        .card.active {
-            border-color: var(--accent);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: var(--surface2);
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
+            flex-shrink: 0;
+            -webkit-app-region: drag;
             user-select: none;
         }
-        .card-platform {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
+        .titlebar-icon {
+            font-size: 1.1rem;
+            -webkit-app-region: no-drag;
         }
-        .platform-dot {
+        .titlebar-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: -0.01em;
+            color: var(--text);
+        }
+        .titlebar-title span {
+            color: var(--accent);
+        }
+        .titlebar-spacer {
+            flex: 1;
+        }
+        .titlebar-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
             flex-shrink: 0;
+            -webkit-app-region: no-drag;
         }
-        .dot-swagbucks {
-            background: #4ade80;
+        .dot-red {
+            background: #ff5f57;
         }
-        .card-actions {
+        .dot-yellow {
+            background: #febc2e;
+        }
+        .dot-green {
+            background: #28c840;
+        }
+
+        /* ── MAIN SHELL LAYOUT ────────────── */
+        .shell {
             display: flex;
-            gap: 4px;
-        }
-        .card-iframe-wrap {
+            flex: 1;
+            overflow: hidden;
             position: relative;
-            width: 100%;
-            height: 0;
-            padding-bottom: 75%;
-            display: none;
         }
-        .card.open .card-iframe-wrap {
-            display: block;
+
+        /* ── SIDEBAR ──────────────────────── */
+        .sidebar {
+            width: var(--sidebar-width);
+            min-width: 160px;
+            max-width: 320px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            user-select: none;
+            transition: width var(--transition);
+            position: relative;
         }
-        .card-iframe-wrap iframe {
+        .sidebar-resizer {
             position: absolute;
+            right: -3px;
             top: 0;
-            left: 0;
+            bottom: 0;
+            width: 6px;
+            cursor: col-resize;
+            z-index: 10;
+        }
+        .sidebar-resizer:hover,
+        .sidebar-resizer.active {
+            background: var(--accent);
+            opacity: 0.5;
+        }
+        .sidebar-section {
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .sidebar-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            padding: 8px 14px 4px;
+            font-weight: 600;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            border-left: 2px solid transparent;
+            white-space: nowrap;
+        }
+        .sidebar-item:hover {
+            background: var(--surface2);
+            color: var(--text);
+        }
+        .sidebar-item.active {
+            background: var(--accent-glow);
+            color: var(--accent);
+            border-left-color: var(--accent);
+            font-weight: 500;
+        }
+        .sidebar-item .icon {
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .sidebar-item .badge {
+            margin-left: auto;
+            font-size: 0.65rem;
+            background: var(--surface3);
+            color: var(--text-secondary);
+            padding: 1px 7px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        .sidebar-item.active .badge {
+            background: var(--accent);
+            color: #000;
+        }
+
+        /* ── MAIN CONTENT AREA ────────────── */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        /* ── TOOLBAR ──────────────────────── */
+        .toolbar {
+            height: var(--toolbar-height);
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .toolbar-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            width: 30px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+        .toolbar-btn:hover {
+            background: var(--surface3);
+            color: var(--text);
+            border-color: var(--border-light);
+        }
+        .toolbar-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .address-bar-wrap {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .address-bar {
+            width: 100%;
+            height: 28px;
+            background: var(--bg);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            padding: 0 10px;
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+            transition: border-color var(--transition);
+            outline: none;
+        }
+        .address-bar:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+        .toolbar-separator {
+            width: 1px;
+            height: 18px;
+            background: var(--border-light);
+            flex-shrink: 0;
+            margin: 0 4px;
+        }
+        .bookmark-btn {
+            background: transparent;
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            transition: all var(--transition);
+            font-family: var(--font);
+        }
+        .bookmark-btn:hover {
+            background: var(--surface3);
+            color: var(--text);
+        }
+        .bookmark-btn.starred {
+            color: var(--yellow);
+            border-color: var(--yellow-dim);
+        }
+
+        /* ── VIEWPORT ─────────────────────── */
+        .viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+        }
+        .viewport-iframe {
             width: 100%;
             height: 100%;
             border: none;
             background: #fff;
         }
-        .card-body {
-            padding: 14px 16px;
+        .view-panel {
+            position: absolute;
+            inset: 0;
+            overflow-y: auto;
+            display: none;
+            background: var(--bg);
+            padding: 24px;
+        }
+        .view-panel.active {
             display: flex;
             flex-direction: column;
-            gap: 10px;
         }
-        .card-balance-row {
+
+        /* ── QUICK LOG BAR ────────────────── */
+        .quicklog {
+            height: var(--quicklog-height);
+            background: var(--surface);
+            border-top: 1px solid var(--border);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
+            padding: 0 14px;
             gap: 8px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
         }
-        .card-balance {
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-        .card-label {
-            font-size: 0.78rem;
-            color: var(--text-secondary);
+        .quicklog-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.04em;
+            font-weight: 600;
+            flex-shrink: 0;
         }
-        .card-input-group {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-        .card-input {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 7px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 0.9rem;
+        .quicklog-input {
             width: 90px;
-            font-family: inherit;
+            height: 28px;
+            background: var(--bg);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            padding: 0 8px;
+            font-size: 0.82rem;
+            font-family: var(--font);
+            outline: none;
             transition: border-color var(--transition);
         }
-        .card-input:focus {
-            outline: none;
+        .quicklog-input:focus {
             border-color: var(--accent);
         }
-        .card-input::placeholder {
-            color: #555;
+        .quicklog-select {
+            height: 28px;
+            background: var(--bg);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            padding: 0 6px;
+            font-size: 0.78rem;
+            font-family: var(--font);
+            cursor: pointer;
+            outline: none;
         }
-        .card-threshold {
-            font-size: 0.75rem;
+        .quicklog-select:focus {
+            border-color: var(--accent);
+        }
+        .quicklog-btn {
+            height: 28px;
+            padding: 0 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 500;
+            font-family: var(--font);
+            border: 1px solid var(--border-light);
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+        .btn-log-done {
+            background: var(--green-dim);
+            color: var(--green);
+            border-color: var(--green);
+        }
+        .btn-log-done:hover {
+            background: var(--green);
+            color: #000;
+        }
+        .btn-log-pending {
+            background: var(--yellow-dim);
+            color: var(--yellow);
+            border-color: var(--yellow);
+        }
+        .btn-log-pending:hover {
+            background: var(--yellow);
+            color: #000;
+        }
+        .btn-log-bonus {
+            background: var(--blue-dim);
+            color: var(--blue);
+            border-color: var(--blue);
+        }
+        .btn-log-bonus:hover {
+            background: var(--blue);
+            color: #000;
+        }
+
+        /* ── STATUS BAR ───────────────────── */
+        .statusbar {
+            height: var(--status-height);
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            gap: 16px;
+            flex-shrink: 0;
+            font-size: 0.72rem;
             color: var(--text-secondary);
+        }
+        .status-item {
             display: flex;
             align-items: center;
             gap: 4px;
         }
-        .threshold-met {
-            color: var(--green);
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
         }
-        .threshold-pending {
-            color: var(--yellow);
+        .status-value {
+            font-weight: 600;
+            color: var(--text);
+        }
+        .status-separator {
+            width: 1px;
+            height: 14px;
+            background: var(--border-light);
         }
 
-        /* ── DASHBOARD SIDEBAR ────────────── */
-        .dashboard {
-            display: flex;
-            flex-direction: column;
+        /* ── DASHBOARD PANEL ──────────────── */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 16px;
+            width: 100%;
         }
         .dash-card {
-            background: var(--surface);
+            background: var(--surface2);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 16px;
         }
-        .dash-title {
+        .dash-card h3 {
+            font-size: 0.85rem;
             font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            margin-bottom: 10px;
+            color: var(--text);
         }
         .time-filters {
             display: flex;
             gap: 4px;
-            flex-wrap: wrap;
+            margin-bottom: 10px;
         }
         .time-btn {
-            background: var(--surface2);
-            border: 1px solid var(--border);
+            background: var(--surface3);
+            border: 1px solid var(--border-light);
             color: var(--text-secondary);
-            padding: 6px 12px;
-            border-radius: 16px;
+            padding: 4px 10px;
+            border-radius: 14px;
             cursor: pointer;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
+            font-family: var(--font);
             transition: all var(--transition);
         }
-        .time-btn.active-filter {
+        .time-btn.active {
             background: var(--accent);
             border-color: var(--accent);
             color: #000;
@@ -337,765 +484,607 @@
         .metric-row {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #ffffff08;
+            padding: 5px 0;
+            border-bottom: 1px solid #ffffff05;
+            font-size: 0.8rem;
         }
-        .metric-value {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        .chart-container {
-            position: relative;
-            height: 140px;
+        .chart-wrap {
+            height: 120px;
             margin-top: 8px;
         }
-        .chart-container canvas {
+        .chart-wrap canvas {
             width: 100%;
             height: 100%;
         }
-        .breakdown-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .breakdown-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            border-bottom: 1px solid #ffffff06;
-        }
-        .breakdown-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 6px;
-        }
 
-        /* ── TOAST ─────────────────────────── */
-        .toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
+        /* ── PLATFORM LIST ────────────────── */
+        .platform-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
-        .toast {
+        .platform-row {
             background: var(--surface2);
             border: 1px solid var(--border);
-            color: var(--text);
-            padding: 10px 18px;
-            border-radius: var(--radius-sm);
-            font-size: 0.85rem;
-            animation: slideIn 0.3s ease;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-        }
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* ── MODAL ─────────────────────────── */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 200;
+            border-radius: var(--radius);
+            padding: 12px 14px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-        .modal {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            max-width: 440px;
-            width: 90%;
+        .platform-info {
             display: flex;
-            flex-direction: column;
-            gap: 16px;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
         }
-        .modal h3 {
-            font-size: 1.1rem;
+        .platform-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
         }
-        .modal label {
+        .platform-name {
+            font-weight: 600;
             font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .platform-cat {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .platform-balances {
+            display: flex;
+            gap: 12px;
+            font-size: 0.78rem;
+        }
+        .platform-action {
+            display: flex;
+            gap: 4px;
+        }
+        .btn-xs {
+            padding: 3px 8px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-light);
+            background: var(--surface3);
             color: var(--text-secondary);
+            cursor: pointer;
+            font-family: var(--font);
+            transition: all var(--transition);
+        }
+        .btn-xs:hover {
+            background: var(--border-light);
+            color: var(--text);
+        }
+        .btn-xs.launch {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* ── SETTINGS ─────────────────────── */
+        .settings-section {
+            max-width: 600px;
+        }
+        .settings-section label {
             display: flex;
             flex-direction: column;
             gap: 4px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
         }
-        .modal input,
-        .modal select {
+        .settings-section input,
+        .settings-section select {
             background: var(--bg);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-light);
             color: var(--text);
             padding: 8px 12px;
             border-radius: var(--radius-sm);
-            font-family: inherit;
-            font-size: 0.9rem;
-        }
-        .modal input:focus,
-        .modal select:focus {
+            font-family: var(--font);
+            font-size: 0.85rem;
             outline: none;
+        }
+        .settings-section input:focus {
             border-color: var(--accent);
         }
-        .modal-actions {
+        .settings-actions {
             display: flex;
             gap: 8px;
-            justify-content: flex-end;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.84rem;
+            font-family: var(--font);
+            font-weight: 500;
+            border: 1px solid var(--border-light);
+            background: var(--surface3);
+            color: var(--text);
+            transition: all var(--transition);
+        }
+        .btn:hover {
+            background: var(--border-light);
+        }
+        .btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            font-weight: 600;
+        }
+        .btn.primary:hover {
+            background: var(--accent-hover);
+        }
+        .btn.danger {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .btn.danger:hover {
+            background: var(--red-dim);
         }
 
-        /* ── EMPTY STATE ──────────────────── */
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-secondary);
-            border: 2px dashed var(--border);
-            border-radius: var(--radius);
+        /* ── TOAST ────────────────────────── */
+        .toast-container {
+            position: fixed;
+            bottom: 50px;
+            right: 16px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
-        .empty-state-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        .toast {
+            background: var(--surface2);
+            border: 1px solid var(--border-light);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* ── RESPONSIVE ───────────────────── */
-        @media (max-width: 600px) {
-            .cards-grid {
-                grid-template-columns: 1fr;
+        /* ── SCROLLBAR ────────────────────── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 50px !important;
+                min-width: 50px;
             }
-            .header-inner {
-                flex-direction: column;
-                align-items: flex-start;
+            .sidebar-item span:not(.icon) {
+                display: none;
             }
-            .header-stats {
-                gap: 8px;
+            .sidebar-label {
+                display: none;
+            }
+            .sidebar-item .badge {
+                display: none;
+            }
+            .quicklog {
+                height: auto;
+                padding: 8px;
+                gap: 4px;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ── HEADER ────────────────────────────── -->
-    <header class="header">
-        <div class="header-inner">
-            <div class="logo">
-                <span class="logo-icon">📄</span>
-                <span>Paper <span class="logo-accent">Chaser</span></span>
-            </div>
-            <div class="header-stats" id="headerStats">
-                <div class="stat-pill">
-                    <span class="stat-label">Today</span>
-                    <span class="stat-value" id="headerToday">$0.00</span>
-                </div>
-                <div class="stat-pill">
-                    <span class="stat-label">This Week</span>
-                    <span class="stat-value" id="headerWeek">$0.00</span>
-                </div>
-                <div class="stat-pill">
-                    <span class="stat-label">This Month</span>
-                    <span class="stat-value" id="headerMonth">$0.00</span>
-                </div>
-                <div class="stat-pill">
-                    <span class="stat-label">Total</span>
-                    <span class="stat-value" id="headerTotal">$0.00</span>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- ═══════════════ TITLE BAR ═══════════════ -->
+    <div class="titlebar">
+        <span class="titlebar-icon">📄</span>
+        <span class="titlebar-title">Paper <span>Chaser</span></span>
+        <span class="titlebar-spacer"></span>
+        <span class="titlebar-dot dot-red"></span>
+        <span class="titlebar-dot dot-yellow"></span>
+        <span class="titlebar-dot dot-green"></span>
+    </div>
 
-    <!-- ── MAIN LAYOUT ──────────────────────── -->
-    <div class="main-container">
-        <!-- ARENA -->
-        <section class="arena">
-            <div class="arena-header">
-                <span class="arena-title">🏟️ The Arena</span>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    <button class="btn btn-primary" onclick="openAddPlatformModal()">+ Add Platform</button>
-                    <button class="btn" onclick="exportData()">📥 Export</button>
-                    <button class="btn" onclick="document.getElementById('importFile').click()">📤 Import</button>
-                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <!-- ═══════════════ SHELL ═══════════════════ -->
+    <div class="shell" id="shell">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-resizer" id="sidebarResizer"></div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Navigate</div>
+                <div class="sidebar-item active" data-view="arena">
+                    <span class="icon">🏟️</span> <span>Arena</span>
+                </div>
+                <div class="sidebar-item" data-view="dashboard">
+                    <span class="icon">📊</span> <span>Dashboard</span>
+                    <span class="badge" id="badgeTotal">$0</span>
                 </div>
             </div>
-            <div class="cards-grid" id="cardsGrid">
-                <!-- Cards rendered by JS -->
-            </div>
-            <div class="empty-state" id="emptyState" style="display:none;">
-                <div class="empty-state-icon">🏟️</div>
-                <p>No platforms yet. Add your first survey platform to start tracking.</p>
-                <button class="btn btn-primary" style="margin-top:12px;" onclick="openAddPlatformModal()">+ Add Platform</button>
-            </div>
-        </section>
-
-        <!-- DASHBOARD SIDEBAR -->
-        <aside class="dashboard">
-            <div class="dash-card">
-                <div class="dash-title">📊 Earnings Breakdown</div>
-                <div class="time-filters" id="timeFilters">
-                    <button class="time-btn active-filter" data-filter="today">Today</button>
-                    <button class="time-btn" data-filter="week">This Week</button>
-                    <button class="time-btn" data-filter="month">This Month</button>
-                    <button class="time-btn" data-filter="total">Total</button>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Chase</div>
+                <div class="sidebar-item" data-view="surveys">
+                    <span class="icon">📝</span> <span>Surveys</span>
+                    <span class="badge" id="badgeSurveys">0</span>
                 </div>
-                <div style="margin-top:12px;">
-                    <div class="metric-row">
-                        <span>Completed</span>
-                        <span class="metric-value" id="dashCompleted" style="color:var(--green);">$0.00</span>
-                    </div>
-                    <div class="metric-row">
-                        <span>Pending</span>
-                        <span class="metric-value" id="dashPending" style="color:var(--yellow);">$0.00</span>
-                    </div>
-                    <div class="metric-row">
-                        <span>Bonuses</span>
-                        <span class="metric-value" id="dashBonuses" style="color:var(--blue);">$0.00</span>
-                    </div>
+                <div class="sidebar-item" data-view="passive">
+                    <span class="icon">📡</span> <span>Passive</span>
+                    <span class="badge" id="badgePassive">0</span>
+                </div>
+                <div class="sidebar-item" data-view="clickwork">
+                    <span class="icon">🖱️</span> <span>Click Work</span>
+                    <span class="badge" id="badgeClickwork">0</span>
+                </div>
+                <div class="sidebar-item" data-view="video">
+                    <span class="icon">🎥</span> <span>Video</span>
+                    <span class="badge" id="badgeVideo">0</span>
+                </div>
+                <div class="sidebar-item" data-view="cashback">
+                    <span class="icon">💳</span> <span>Cashback</span>
+                    <span class="badge" id="badgeCashback">0</span>
+                </div>
+                <div class="sidebar-item" data-view="receipts">
+                    <span class="icon">🧾</span> <span>Receipts</span>
+                    <span class="badge" id="badgeReceipts">0</span>
                 </div>
             </div>
-
-            <div class="dash-card">
-                <div class="dash-title">🥧 Platform Split</div>
-                <div class="chart-container">
-                    <canvas id="doughnutChart"></canvas>
-                </div>
-                <div class="breakdown-list" id="platformBreakdown">
-                    <!-- Rendered by JS -->
+            <div class="sidebar-section">
+                <div class="sidebar-label">System</div>
+                <div class="sidebar-item" data-view="settings">
+                    <span class="icon">⚙️</span> <span>Settings</span>
                 </div>
             </div>
-
-            <div class="dash-card">
-                <div class="dash-title">📈 Daily Trend (7 days)</div>
-                <div class="chart-container">
-                    <canvas id="barChart"></canvas>
-                </div>
+            <div style="flex:1;"></div>
+            <div style="padding:10px 14px;font-size:0.6rem;color:var(--text-muted);border-top:1px solid var(--border);">
+                v0.1 · Public Repo Ready
             </div>
         </aside>
-    </div>
 
-    <!-- ── ADD PLATFORM MODAL ──────────────── -->
-    <div class="modal-overlay" id="addPlatformModal" style="display:none;">
-        <div class="modal">
-            <h3>Add Survey Platform</h3>
-            <label>Platform Name
-                <input type="text" id="newPlatformName" placeholder="e.g., Swagbucks, Survey Junkie...">
-            </label>
-            <label>Survey URL (optional — for iframe arena)
-                <input type="url" id="newPlatformUrl" placeholder="https://www.swagbucks.com/surveys">
-            </label>
-            <label>Payout Threshold ($)
-                <input type="number" id="newPlatformThreshold" placeholder="10.00" step="0.01" min="0" value="10.00">
-            </label>
-            <div class="modal-actions">
-                <button class="btn" onclick="closeAddPlatformModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="addPlatform()">Add Platform</button>
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- TOOLBAR -->
+            <div class="toolbar" id="toolbar">
+                <button class="toolbar-btn" id="btnBack" disabled title="Back">◀</button>
+                <button class="toolbar-btn" id="btnForward" disabled title="Forward">▶</button>
+                <button class="toolbar-btn" id="btnReload" title="Reload">↻</button>
+                <div class="address-bar-wrap">
+                    <input type="text" class="address-bar" id="addressBar"
+                    placeholder="Enter URL to navigate the arena..."
+                    value="https://www.swagbucks.com/surveys">
+                </div>
+                <button class="toolbar-btn" id="btnGo" title="Go">→</button>
+                <span class="toolbar-separator"></span>
+                <button class="bookmark-btn" id="btnBookmark" title="Bookmark current page">☆</button>
+                <button class="bookmark-btn" id="btnQuickLog" title="Quick log earnings">+$</button>
+            </div>
+
+            <!-- VIEWPORT -->
+            <div class="viewport" id="viewport">
+                <!-- Arena: Browser iframe -->
+                <div class="view-panel active" id="panel-arena">
+                    <iframe class="viewport-iframe" id="arenaIframe"
+                    src="about:blank"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
+                    loading="lazy"
+                title="Paper Chaser Arena"></iframe>
+            </div>
+            <!-- Dashboard -->
+            <div class="view-panel" id="panel-dashboard">
+                <h2 style="margin-bottom:16px;">📊 Dashboard</h2>
+                <div style="margin-bottom:12px;">
+                    <div class="time-filters" id="timeFilters">
+                        <button class="time-btn active" data-filter="today">Today</button>
+                        <button class="time-btn" data-filter="week">This Week</button>
+                        <button class="time-btn" data-filter="month">This Month</button>
+                        <button class="time-btn" data-filter="total">Total</button>
+                    </div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dash-card">
+                        <h3>💰 Earnings</h3>
+                        <div class="metric-row"><span>Completed</span><span style="color:var(--green);font-weight:600;" id="dashCompleted">$0.00</span></div>
+                        <div class="metric-row"><span>Pending</span><span style="color:var(--yellow);font-weight:600;" id="dashPending">$0.00</span></div>
+                        <div class="metric-row"><span>Bonuses</span><span style="color:var(--blue);font-weight:600;" id="dashBonuses">$0.00</span></div>
+                    </div>
+                    <div class="dash-card">
+                        <h3>🥧 By Platform</h3>
+                        <div class="chart-wrap"><canvas id="doughnutChart"></canvas></div>
+                    </div>
+                    <div class="dash-card">
+                        <h3>📈 7-Day Trend</h3>
+                        <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+                    </div>
+                    <div class="dash-card">
+                        <h3>🏷️ Platform Breakdown</h3>
+                        <div id="platformBreakdownList" style="font-size:0.8rem;"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Surveys -->
+            <div class="view-panel" id="panel-surveys">
+                <h2 style="margin-bottom:16px;">📝 Survey Platforms</h2>
+                <div id="surveysList" class="platform-list"></div>
+                <button class="btn primary" style="margin-top:12px;" onclick="addPlatform('survey')">+ Add Survey Platform</button>
+            </div>
+            <!-- Passive -->
+            <div class="view-panel" id="panel-passive">
+                <h2 style="margin-bottom:16px;">📡 Passive Income</h2>
+                <div id="passiveList" class="platform-list"></div>
+                <button class="btn primary" style="margin-top:12px;" onclick="addPlatform('passive')">+ Add Passive Platform</button>
+            </div>
+            <!-- Click Work -->
+            <div class="view-panel" id="panel-clickwork">
+                <h2 style="margin-bottom:16px;">🖱️ Click Work</h2>
+                <div id="clickworkList" class="platform-list"></div>
+                <button class="btn primary" style="margin-top:12px;" onclick="addPlatform('clickwork')">+ Add Click Work Platform</button>
+            </div>
+            <!-- Video -->
+            <div class="view-panel" id="panel-video">
+                <h2 style="margin-bottom:16px;">🎥 Video Earning</h2>
+                <div id="videoList" class="platform-list"></div>
+                <button class="btn primary" style="margin-top:12px;" onclick="addPlatform('video')">+ Add Video Platform</button>
+            </div>
+            <!-- Cashback -->
+            <div class="view-panel" id="panel-cashback">
+                <h2 style="margin-bottom:16px;">💳 Cashback</h2>
+                <div id="cashbackList" class="platform-list"></div>
+                <button class="btn primary" style="margin-top:12px;" onclick="addPlatform('cashback')">+ Add Cashback Platform</button>
+            </div>
+            <!-- Receipts -->
+            <div class="view-panel" id="panel-receipts">
+                <h2 style="margin-bottom:16px;">🧾 Receipt Scanning</h2>
+                <div id="receiptsList" class="platform-list"></div>
+                <button class="btn primary" style="margin-top:12px;" onclick="addPlatform('receipts')">+ Add Receipt Platform</button>
+            </div>
+            <!-- Settings -->
+            <div class="view-panel" id="panel-settings">
+                <h2 style="margin-bottom:16px;">⚙️ Settings</h2>
+                <div class="settings-section">
+                    <label>Default Arena URL
+                        <input type="url" id="settingDefaultUrl" placeholder="https://www.swagbucks.com/surveys">
+                    </label>
+                    <div class="settings-actions">
+                        <button class="btn" onclick="exportAllData()">📥 Export All Data</button>
+                        <button class="btn" onclick="document.getElementById('importFile').click()">📤 Import Data</button>
+                        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importAllData(event)">
+                        <button class="btn danger" onclick="resetAllData()">🗑️ Reset Everything</button>
+                    </div>
+                    <p style="font-size:0.72rem;color:var(--text-muted);margin-top:12px;">
+                        All data stored in your browser's localStorage. No server. No tracking. Export regularly for backup.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ── TOAST CONTAINER ──────────────────── -->
+    <!-- ═══════════════ QUICK LOG BAR ═══════════════ -->
+    <div class="quicklog" id="quicklogBar">
+        <span class="quicklog-label">Quick Log</span>
+        <select class="quicklog-select" id="quicklogPlatform">
+            <option value="">Select platform...</option>
+        </select>
+        <input type="number" class="quicklog-input" id="quicklogAmount" placeholder="Amount" step="0.01" min="0.01">
+        <button class="quicklog-btn btn-log-done" onclick="quickLog('completed')">✓ Done</button>
+        <button class="quicklog-btn btn-log-pending" onclick="quickLog('pending')">⏳ Pending</button>
+        <button class="quicklog-btn btn-log-bonus" onclick="quickLog('bonus')">🎁 Bonus</button>
+    </div>
+
+    <!-- ═══════════════ STATUS BAR ═══════════════ -->
+    <div class="statusbar" id="statusbar">
+        <span class="status-item"><span class="status-dot" style="background:var(--green);"></span> Today: <span class="status-value" id="statusToday">$0.00</span></span>
+        <span class="status-separator"></span>
+        <span class="status-item">Week: <span class="status-value" id="statusWeek">$0.00</span></span>
+        <span class="status-separator"></span>
+        <span class="status-item">Month: <span class="status-value" id="statusMonth">$0.00</span></span>
+        <span class="status-separator"></span>
+        <span class="status-item">Total: <span class="status-value" id="statusTotal">$0.00</span></span>
+        <span style="flex:1;"></span>
+        <span class="status-item" id="statusPlatforms">0 platforms</span>
+    </div>
+
+    <!-- TOAST CONTAINER -->
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ──────────────────────────────────────
-        // PAPER CHASER · CORE ENGINE
-        // ──────────────────────────────────────
-        const STORAGE_KEY = 'paperchaser_data_v1';
+        // ═══════════════════════════════════════════
+        // PAPER CHASER · SHELL ENGINE
+        // ═══════════════════════════════════════════
 
-        // Default data structure
+        const STORAGE_KEY = 'paperchaser_shell_v1';
+        const CATEGORIES = ['survey', 'passive', 'clickwork', 'video', 'cashback', 'receipts'];
+        const CATEGORY_META = {
+            survey: { label: 'Surveys', icon: '📝', panel: 'panel-surveys', listId: 'surveysList',
+                badgeId: 'badgeSurveys' },
+            passive: { label: 'Passive', icon: '📡', panel: 'panel-passive', listId: 'passiveList',
+            badgeId: 'badgePassive' },
+            clickwork: { label: 'Click Work', icon: '🖱️', panel: 'panel-clickwork', listId: 'clickworkList',
+                badgeId: 'badgeClickwork' },
+            video: { label: 'Video', icon: '🎥', panel: 'panel-video', listId: 'videoList', badgeId: 'badgeVideo' },
+            cashback: { label: 'Cashback', icon: '💳', panel: 'panel-cashback', listId: 'cashbackList',
+                badgeId: 'badgeCashback' },
+            receipts: { label: 'Receipts', icon: '🧾', panel: 'panel-receipts', listId: 'receiptsList',
+                badgeId: 'badgeReceipts' },
+        };
+
         function getDefaultData() {
             return {
+                settings: {
+                    defaultUrl: 'https://www.swagbucks.com/surveys',
+                    sidebarWidth: 220,
+                },
                 platforms: [
-                    {
-                        id: 'platform_1',
-                        name: 'Swagbucks',
-                        url: 'https://www.swagbucks.com/surveys',
-                        threshold: 10.00,
-                        color: '#4ade80',
-                        balance: 0,
-                        pending: 0,
-                        bonuses: 0,
-                        transactions: [],
-                        createdAt: new Date().toISOString(),
-                    },
+                    { id: 'p1', name: 'Swagbucks', category: 'survey', url: 'https://www.swagbucks.com/surveys',
+                        threshold: 10, color: '#4ade80', balance: 0, pending: 0, bonuses: 0,
+                        transactions: [], createdAt: new Date().toISOString() },
+                    { id: 'p2', name: 'Honeygain', category: 'passive', url: 'https://dashboard.honeygain.com',
+                        threshold: 20, color: '#fbbf24', balance: 0, pending: 0, bonuses: 0,
+                    transactions: [], createdAt: new Date().toISOString() },
+                    { id: 'p3', name: 'Prolific', category: 'survey', url: 'https://www.prolific.com',
+                        threshold: 5, color: '#60a5fa', balance: 0, pending: 0, bonuses: 0, transactions: [],
+                        createdAt: new Date().toISOString() },
                 ],
+                bookmarks: [],
+                navigationHistory: [],
+                navIndex: -1,
+                activeView: 'arena',
+                activeTimeFilter: 'today',
             };
         }
 
-        // Load data from localStorage
         function loadData() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
                 if (raw) {
                     const data = JSON.parse(raw);
-                    // Ensure all platforms have the expected fields
-                    data.platforms = data.platforms.map(p => ({
-                        id: p.id || 'platform_' + Date.now() + Math.random().toString(36).substr(2, 5),
+                    // Ensure all fields exist
+                    data.settings = data.settings || getDefaultData().settings;
+                    data.platforms = (data.platforms || []).map(p => ({
+                        id: p.id || 'p_' + Date.now(),
                         name: p.name || 'Unknown',
+                        category: p.category || 'survey',
                         url: p.url || '',
-                        threshold: p.threshold ?? 10.00,
-                        color: p.color || getRandomColor(),
+                        threshold: p.threshold ?? 10,
+                        color: p.color || '#4ade80',
                         balance: p.balance ?? 0,
                         pending: p.pending ?? 0,
                         bonuses: p.bonuses ?? 0,
                         transactions: p.transactions || [],
                         createdAt: p.createdAt || new Date().toISOString(),
                     }));
+                    data.bookmarks = data.bookmarks || [];
+                    data.navigationHistory = data.navigationHistory || [];
+                    data.navIndex = data.navIndex ?? -1;
+                    data.activeView = data.activeView || 'arena';
+                    data.activeTimeFilter = data.activeTimeFilter || 'today';
                     return data;
                 }
-            } catch (e) {
-                console.error('Failed to load data:', e);
-            }
+            } catch (e) { console.error('Load error:', e); }
             return getDefaultData();
         }
 
-        // Save data to localStorage
-        function saveData(data) {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            } catch (e) {
-                showToast('⚠️ Storage full — please export your data');
-            }
-        }
-
-        function getRandomColor() {
-            const colors = ['#4ade80', '#60a5fa', '#fbbf24', '#f87171', '#a78bfa', '#34d399', '#fb923c',
-            '#38bdf8'];
-            return colors[Math.floor(Math.random() * colors.length)];
+        function saveData() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); } catch (e) { showToast(
+                    '⚠️ Storage full — export your data'); }
         }
 
         let appData = loadData();
-        let activeTimeFilter = 'today';
-        let chartInstances = {};
 
         // ── TOAST ──────────────────────────────
-        function showToast(message) {
+        function showToast(msg) {
             const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s';
-                setTimeout(() => toast.remove(), 300);
-            }, 2500);
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            container.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0';
+                t.style.transition = 'opacity 0.3s';
+                setTimeout(() => t.remove(), 300); }, 2500);
         }
 
         // ── DATA HELPERS ──────────────────────
-        function getPlatformById(id) {
+        function getPlatformsByCategory(cat) {
+            return appData.platforms.filter(p => p.category === cat);
+        }
+
+        function getPlatform(id) {
             return appData.platforms.find(p => p.id === id);
         }
 
         function addTransaction(platformId, amount, type) {
-            const platform = getPlatformById(platformId);
-            if (!platform) return;
-            const tx = {
-                id: 'tx_' + Date.now() + Math.random().toString(36).substr(2, 4),
-                amount: parseFloat(amount) || 0,
-                type: type, // 'completed', 'pending', 'bonus'
-                date: new Date().toISOString(),
-            };
-            platform.transactions.push(tx);
-            // Update running totals
-            if (type === 'completed') platform.balance += tx.amount;
-            if (type === 'pending') platform.pending += tx.amount;
-            if (type === 'bonus') platform.bonuses += tx.amount;
-            saveData(appData);
-            renderAll();
-            showToast(
-                `✅ $${tx.amount.toFixed(2)} ${type} added to ${platform.name}`
-            );
+            const p = getPlatform(platformId);
+            if (!p || isNaN(amount) || amount <= 0) return false;
+            const tx = { id: 'tx_' + Date.now(), amount: parseFloat(amount), type, date: new Date().toISOString() };
+            p.transactions.push(tx);
+            if (type === 'completed') p.balance += tx.amount;
+            if (type === 'pending') p.pending += tx.amount;
+            if (type === 'bonus') p.bonuses += tx.amount;
+            saveData();
+            refreshAll();
+            showToast(`✅ $${tx.amount.toFixed(2)} ${type} → ${p.name}`);
+            return true;
         }
 
         function removeTransaction(platformId, txId) {
-            const platform = getPlatformById(platformId);
-            if (!platform) return;
-            const txIndex = platform.transactions.findIndex(t => t.id === txId);
-            if (txIndex === -1) return;
-            const tx = platform.transactions[txIndex];
-            // Reverse the balance impact
-            if (tx.type === 'completed') platform.balance -= tx.amount;
-            if (tx.type === 'pending') platform.pending -= tx.amount;
-            if (tx.type === 'bonus') platform.bonuses -= tx.amount;
-            // Clamp to 0
-            platform.balance = Math.max(0, platform.balance);
-            platform.pending = Math.max(0, platform.pending);
-            platform.bonuses = Math.max(0, platform.bonuses);
-            platform.transactions.splice(txIndex, 1);
-            saveData(appData);
-            renderAll();
-            showToast(`🗑️ Transaction removed from ${platform.name}`);
+            const p = getPlatform(platformId);
+            if (!p) return;
+            const idx = p.transactions.findIndex(t => t.id === txId);
+            if (idx === -1) return;
+            const tx = p.transactions[idx];
+            if (tx.type === 'completed') p.balance = Math.max(0, p.balance - tx.amount);
+            if (tx.type === 'pending') p.pending = Math.max(0, p.pending - tx.amount);
+            if (tx.type === 'bonus') p.bonuses = Math.max(0, p.bonuses - tx.amount);
+            p.transactions.splice(idx, 1);
+            saveData();
+            refreshAll();
+            showToast(`🗑️ Removed from ${p.name}`);
         }
 
         function getFilteredEarnings(platform, filter) {
             const now = new Date();
-            const txs = platform.transactions || [];
-            let filtered = txs;
+            let txs = platform.transactions || [];
             if (filter === 'today') {
-                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                filtered = txs.filter(t => new Date(t.date) >= todayStart);
+                const s = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                txs = txs.filter(t => new Date(t.date) >= s);
             } else if (filter === 'week') {
-                const dayOfWeek = now.getDay();
-                const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek);
-                filtered = txs.filter(t => new Date(t.date) >= weekStart);
+                const s = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+                txs = txs.filter(t => new Date(t.date) >= s);
             } else if (filter === 'month') {
-                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-                filtered = txs.filter(t => new Date(t.date) >= monthStart);
+                const s = new Date(now.getFullYear(), now.getMonth(), 1);
+                txs = txs.filter(t => new Date(t.date) >= s);
             }
-            const completed = filtered.filter(t => t.type === 'completed').reduce((s, t) => s + t.amount, 0);
-            const pending = filtered.filter(t => t.type === 'pending').reduce((s, t) => s + t.amount, 0);
-            const bonuses = filtered.filter(t => t.type === 'bonus').reduce((s, t) => s + t.amount, 0);
-            return { completed, pending, bonuses, total: completed + pending + bonuses };
-        }
-
-        function getDailyBreakdown(platform, days = 7) {
-            const result = [];
-            const now = new Date();
-            for (let i = days - 1; i >= 0; i--) {
-                const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-                const dayStart = new Date(d);
-                const dayEnd = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
-                const dayTxs = (platform.transactions || []).filter(t => {
-                    const td = new Date(t.date);
-                    return td >= dayStart && td < dayEnd;
-                });
-                const total = dayTxs.reduce((s, t) => s + t.amount, 0);
-                result.push({
-                    date: d.toLocaleDateString('en-US', { weekday: 'short', month: 'short',
-                        day: 'numeric' }),
-                    total,
-                });
-            }
-            return result;
-        }
-
-        // ── RENDER ─────────────────────────────
-        function renderAll() {
-            renderCards();
-            renderDashboard();
-            renderCharts();
-            updateHeaderStats();
-        }
-
-        function renderCards() {
-            const grid = document.getElementById('cardsGrid');
-            const emptyState = document.getElementById('emptyState');
-            if (appData.platforms.length === 0) {
-                grid.innerHTML = '';
-                emptyState.style.display = 'block';
-                return;
-            }
-            emptyState.style.display = 'none';
-            grid.innerHTML = appData.platforms.map(p => {
-                const thresholdMet = p.balance >= p.threshold;
-                const thresholdClass = thresholdMet ? 'threshold-met' : 'threshold-pending';
-                const thresholdIcon = thresholdMet ? '✅' : '⏳';
-                const recentTxs = (p.transactions || []).slice(-5).reverse();
-                return `
-                <div class="card ${p._open ? 'open' : ''}" id="card-${p.id}">
-                  <div class="card-header" onclick="toggleCard('${p.id}')">
-                    <div class="card-platform">
-                      <span class="platform-dot" style="background:${p.color};"></span>
-                      ${escapeHtml(p.name)}
-                    </div>
-                    <div class="card-actions">
-                      <span class="card-threshold ${thresholdClass}">${thresholdIcon} $${p.threshold.toFixed(2)}</span>
-                      <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removePlatform('${p.id}')" title="Remove">✕</button>
-                    </div>
-                  </div>
-                  ${p.url ? `
-                  <div class="card-iframe-wrap">
-                    <iframe src="${escapeHtml(p.url)}" 
-                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
-                            loading="lazy"
-                            title="${escapeHtml(p.name)} survey arena">
-                    </iframe>
-                  </div>` : ''}
-                  <div class="card-body">
-                    <div class="card-balance-row">
-                      <div>
-                        <div class="card-label">Balance</div>
-                        <div class="card-balance">$${p.balance.toFixed(2)}</div>
-                      </div>
-                      <div>
-                        <div class="card-label">Pending</div>
-                        <div style="color:var(--yellow);font-weight:600;">$${p.pending.toFixed(2)}</div>
-                      </div>
-                      <div>
-                        <div class="card-label">Bonuses</div>
-                        <div style="color:var(--blue);font-weight:600;">$${p.bonuses.toFixed(2)}</div>
-                      </div>
-                    </div>
-                    <div class="card-input-group">
-                      <input type="number" class="card-input" id="input-${p.id}" placeholder="Amount" step="0.01" min="0.01">
-                      <button class="btn btn-sm" style="color:var(--green);border-color:var(--green);" onclick="addEarnings('${p.id}', 'completed')">✓ Done</button>
-                      <button class="btn btn-sm" style="color:var(--yellow);border-color:var(--yellow);" onclick="addEarnings('${p.id}', 'pending')">⏳ Pend</button>
-                      <button class="btn btn-sm" style="color:var(--blue);border-color:var(--blue);" onclick="addEarnings('${p.id}', 'bonus')">🎁 Bonus</button>
-                    </div>
-                    ${recentTxs.length > 0 ? `
-                    <div style="margin-top:6px;">
-                      <div class="card-label" style="margin-bottom:4px;">Recent</div>
-                      ${recentTxs.map(tx => `
-                        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;padding:3px 0;border-bottom:1px solid #ffffff06;">
-                          <span style="color:${tx.type==='completed'?'var(--green)':tx.type==='pending'?'var(--yellow)':'var(--blue)'};">${tx.type}</span>
-                          <span>$${tx.amount.toFixed(2)}</span>
-                          <span style="color:var(--text-secondary);">${new Date(tx.date).toLocaleDateString()}</span>
-                          <button class="btn btn-sm" style="padding:1px 5px;font-size:0.7rem;color:#ef4444;" onclick="removeTransaction('${p.id}','${tx.id}')">✕</button>
-                        </div>
-                      `).join('')}
-                    </div>` : '<div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;">No transactions yet</div>'}
-                  </div>
-                </div>
-              `;
-            }).join('');
-        }
-
-        function toggleCard(id) {
-            const platform = getPlatformById(id);
-            if (!platform) return;
-            platform._open = !platform._open;
-            saveData(appData);
-            renderCards();
-        }
-
-        function addEarnings(platformId, type) {
-            const input = document.getElementById('input-' + platformId);
-            if (!input) return;
-            const amount = parseFloat(input.value);
-            if (isNaN(amount) || amount <= 0) {
-                showToast('⚠️ Please enter a valid amount');
-                return;
-            }
-            addTransaction(platformId, amount, type);
-            input.value = '';
-            input.focus();
-        }
-
-        function removePlatform(id) {
-            if (!confirm('Remove this platform? All data will be lost.')) return;
-            appData.platforms = appData.platforms.filter(p => p.id !== id);
-            saveData(appData);
-            renderAll();
-            showToast('🗑️ Platform removed');
-        }
-
-        function updateHeaderStats() {
-            const allPlatforms = appData.platforms;
-            const calc = (filter) => {
-                let c = 0,
-                    p = 0,
-                    b = 0;
-                allPlatforms.forEach(pl => {
-                    const e = getFilteredEarnings(pl, filter);
-                    c += e.completed;
-                    p += e.pending;
-                    b += e.bonuses;
-                });
-                return c + p + b;
+            return {
+                completed: txs.filter(t => t.type === 'completed').reduce((s, t) => s + t.amount, 0),
+                pending: txs.filter(t => t.type === 'pending').reduce((s, t) => s + t.amount, 0),
+                bonuses: txs.filter(t => t.type === 'bonus').reduce((s, t) => s + t.amount, 0),
+                total: txs.reduce((s, t) => s + t.amount, 0),
             };
-            document.getElementById('headerToday').textContent = '$' + calc('today').toFixed(2);
-            document.getElementById('headerWeek').textContent = '$' + calc('week').toFixed(2);
-            document.getElementById('headerMonth').textContent = '$' + calc('month').toFixed(2);
-            document.getElementById('headerTotal').textContent = '$' + allPlatforms.reduce((s, pl) => s + pl
-                .balance + pl.pending + pl.bonuses, 0).toFixed(2);
         }
 
-        function renderDashboard() {
-            const allPlatforms = appData.platforms;
-            const calc = (filter) => {
-                let c = 0,
-                    p = 0,
-                    b = 0;
-                allPlatforms.forEach(pl => {
-                    const e = getFilteredEarnings(pl, filter);
-                    c += e.completed;
-                    p += e.pending;
-                    b += e.bonuses;
-                });
-                return { completed: c, pending: p, bonuses: b };
-            };
-            const earnings = calc(activeTimeFilter);
-            document.getElementById('dashCompleted').textContent = '$' + earnings.completed.toFixed(2);
-            document.getElementById('dashPending').textContent = '$' + earnings.pending.toFixed(2);
-            document.getElementById('dashBonuses').textContent = '$' + earnings.bonuses.toFixed(2);
-
-            // Platform breakdown list
-            const breakdownDiv = document.getElementById('platformBreakdown');
-            breakdownDiv.innerHTML = allPlatforms.map(p => {
-                const e = getFilteredEarnings(p, activeTimeFilter);
-                return `
-                <div class="breakdown-item">
-                  <span><span class="breakdown-dot" style="background:${p.color};"></span>${escapeHtml(p.name)}</span>
-                  <span style="font-weight:600;">$${e.total.toFixed(2)}</span>
-                </div>
-              `;
-            }).join('');
+        function getCategoryTotal(category, filter) {
+            return getPlatformsByCategory(category).reduce((s, p) => s + getFilteredEarnings(p, filter).total, 0);
         }
 
-        function renderCharts() {
-            renderDoughnutChart();
-            renderBarChart();
-        }
-
-        function renderDoughnutChart() {
-            const canvas = document.getElementById('doughnutChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            if (chartInstances.doughnut) chartInstances.doughnut.destroy();
-            const allPlatforms = appData.platforms;
-            const labels = allPlatforms.map(p => p.name);
-            const data = allPlatforms.map(p => getFilteredEarnings(p, activeTimeFilter).total);
-            const colors = allPlatforms.map(p => p.color);
-            // Use a simple canvas-based doughnut since we have no Chart.js CDN
-            // We'll draw a simple representation
-            drawSimpleDoughnut(ctx, data, colors, labels);
-        }
-
-        function drawSimpleDoughnut(ctx, data, colors, labels) {
-            const w = ctx.canvas.width = ctx.canvas.parentElement.clientWidth || 200;
-            const h = ctx.canvas.height = 140;
-            ctx.clearRect(0, 0, w, h);
-            const total = data.reduce((s, v) => s + v, 0);
-            if (total === 0) {
-                ctx.fillStyle = '#999';
-                ctx.font = '12px Inter, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('No data yet', w / 2, h / 2);
-                return;
-            }
-            const cx = 50,
-                cy = h / 2,
-                radius = 45,
-                innerRadius = 28;
-            let startAngle = -Math.PI / 2;
-            data.forEach((val, i) => {
-                if (val === 0) return;
-                const sliceAngle = (val / total) * Math.PI * 2;
-                ctx.beginPath();
-                ctx.arc(cx, cy, radius, startAngle, startAngle + sliceAngle);
-                ctx.arc(cx, cy, innerRadius, startAngle + sliceAngle, startAngle, true);
-                ctx.closePath();
-                ctx.fillStyle = colors[i];
-                ctx.fill();
-                startAngle += sliceAngle;
-            });
-            // Legend
-            let ly = 10;
-            labels.forEach((label, i) => {
-                if (data[i] === 0) return;
-                ctx.fillStyle = colors[i];
-                ctx.fillRect(w - 100, ly, 10, 10);
-                ctx.fillStyle = '#e0e0e0';
-                ctx.font = '10px Inter, sans-serif';
-                ctx.textAlign = 'left';
-                ctx.fillText(`${label}: $${data[i].toFixed(2)}`, w - 86, ly + 9);
-                ly += 16;
-            });
-        }
-
-        function renderBarChart() {
-            const canvas = document.getElementById('barChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const w = ctx.canvas.width = ctx.canvas.parentElement.clientWidth || 200;
-            const h = ctx.canvas.height = 140;
-            ctx.clearRect(0, 0, w, h);
-            // Aggregate daily totals across all platforms
-            const allPlatforms = appData.platforms;
-            const days = 7;
-            const aggregated = [];
-            const now = new Date();
-            for (let i = days - 1; i >= 0; i--) {
-                const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-                const dayStart = new Date(d);
-                const dayEnd = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
-                let total = 0;
-                allPlatforms.forEach(p => {
-                    (p.transactions || []).forEach(t => {
-                        const td = new Date(t.date);
-                        if (td >= dayStart && td < dayEnd) total += t.amount;
-                    });
-                });
-                aggregated.push({
-                    label: d.toLocaleDateString('en-US', { weekday: 'short' }),
-                    total,
-                });
-            }
-            const maxVal = Math.max(...aggregated.map(d => d.total), 1);
-            const barWidth = (w - 60) / days - 4;
-            const chartBottom = h - 20;
-            const chartTop = 15;
-            const chartHeight = chartBottom - chartTop;
-            // Axes
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(35, chartTop);
-            ctx.lineTo(35, chartBottom);
-            ctx.lineTo(w - 10, chartBottom);
-            ctx.stroke();
-            // Bars
-            aggregated.forEach((d, i) => {
-                const x = 38 + i * ((w - 60) / days);
-                const barH = (d.total / maxVal) * chartHeight;
-                const y = chartBottom - barH;
-                // Gradient
-                const grad = ctx.createLinearGradient(x, y, x, chartBottom);
-                grad.addColorStop(0, '#ff6b35');
-                grad.addColorStop(1, '#ff6b3522');
-                ctx.fillStyle = grad;
-                ctx.fillRect(x, y, barWidth, barH);
-                // Label
-                ctx.fillStyle = '#999';
-                ctx.font = '9px Inter, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(d.label, x + barWidth / 2, chartBottom + 12);
-                // Value on top
-                if (d.total > 0) {
-                    ctx.fillStyle = '#e0e0e0';
-                    ctx.fillText('$' + d.total.toFixed(2), x + barWidth / 2, y - 4);
-                }
-            });
-        }
-
-        // ── MODALS ─────────────────────────────
-        function openAddPlatformModal() {
-            document.getElementById('addPlatformModal').style.display = 'flex';
-            document.getElementById('newPlatformName').focus();
-        }
-
-        function closeAddPlatformModal() {
-            document.getElementById('addPlatformModal').style.display = 'none';
-            document.getElementById('newPlatformName').value = '';
-            document.getElementById('newPlatformUrl').value = '';
-            document.getElementById('newPlatformThreshold').value = '10.00';
-        }
-
-        function addPlatform() {
-            const nameInput = document.getElementById('newPlatformName');
-            const urlInput = document.getElementById('newPlatformUrl');
-            const thresholdInput = document.getElementById('newPlatformThreshold');
-            const name = nameInput.value.trim();
-            if (!name) {
-                showToast('⚠️ Please enter a platform name');
-                return;
-            }
+        // ── ADD PLATFORM ──────────────────────
+        function addPlatform(category) {
+            const name = prompt('Platform name:');
+            if (!name || !name.trim()) return;
+            const url = prompt('URL (optional):') || '';
+            const threshold = parseFloat(prompt('Payout threshold ($):', '10')) || 10;
+            const colors = ['#4ade80', '#60a5fa', '#fbbf24', '#f87171', '#a78bfa', '#34d399', '#fb923c', '#38bdf8',
+            '#e879f9'];
             const platform = {
-                id: 'platform_' + Date.now() + Math.random().toString(36).substr(2, 5),
-                name,
-                url: urlInput.value.trim(),
-                threshold: parseFloat(thresholdInput.value) || 10.00,
-                color: getRandomColor(),
+                id: 'p_' + Date.now(),
+                name: name.trim(),
+                category,
+                url,
+                threshold,
+                color: colors[Math.floor(Math.random() * colors.length)],
                 balance: 0,
                 pending: 0,
                 bonuses: 0,
@@ -1103,14 +1092,368 @@
                 createdAt: new Date().toISOString(),
             };
             appData.platforms.push(platform);
-            saveData(appData);
-            closeAddPlatformModal();
-            renderAll();
-            showToast(`✅ ${name} added to the arena`);
+            saveData();
+            refreshAll();
+            navigateTo(CATEGORY_META[category].panel.replace('panel-', ''));
+            showToast(`✅ ${name} added to ${CATEGORY_META[category].label}`);
         }
 
-        // ── IMPORT / EXPORT ────────────────────
-        function exportData() {
+        function removePlatform(id) {
+            const p = getPlatform(id);
+            if (!p) return;
+            if (!confirm(`Remove ${p.name}? All data will be lost.`)) return;
+            appData.platforms = appData.platforms.filter(pl => pl.id !== id);
+            saveData();
+            refreshAll();
+            showToast(`🗑️ ${p.name} removed`);
+        }
+
+        // ── QUICK LOG ─────────────────────────
+        function quickLog(type) {
+            const select = document.getElementById('quicklogPlatform');
+            const input = document.getElementById('quicklogAmount');
+            const platformId = select.value;
+            const amount = parseFloat(input.value);
+            if (!platformId) { showToast('⚠️ Select a platform'); return; }
+            if (isNaN(amount) || amount <= 0) { showToast('⚠️ Enter a valid amount'); return; }
+            if (addTransaction(platformId, amount, type)) {
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function refreshQuicklogSelect() {
+            const select = document.getElementById('quicklogPlatform');
+            const current = select.value;
+            select.innerHTML = '<option value="">Select platform...</option>' +
+                appData.platforms.map(p =>
+                    `<option value="${p.id}" ${p.id === current ? 'selected' : ''}>${escHtml(p.name)} (${CATEGORY_META[p.category]?.label || p.category})</option>`
+                ).join('');
+        }
+
+        // ── NAVIGATION ────────────────────────
+        function navigateTo(view) {
+            // Hide all panels
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            // Show target
+            const panel = document.getElementById('panel-' + view);
+            if (panel) panel.classList.add('active');
+            // Update sidebar
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            const item = document.querySelector(`.sidebar-item[data-view="${view}"]`);
+            if (item) item.classList.add('active');
+            appData.activeView = view;
+            saveData();
+            // Refresh category lists
+            refreshCategoryLists();
+        }
+
+        function navigateUrl(url) {
+            if (!url) return;
+            // Add protocol if missing
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            const iframe = document.getElementById('arenaIframe');
+            iframe.src = url;
+            document.getElementById('addressBar').value = url;
+            // Add to history
+            if (appData.navIndex < appData.navigationHistory.length - 1) {
+                appData.navigationHistory = appData.navigationHistory.slice(0, appData.navIndex + 1);
+            }
+            appData.navigationHistory.push(url);
+            appData.navIndex = appData.navigationHistory.length - 1;
+            saveData();
+            updateNavButtons();
+            // Switch to arena view
+            navigateTo('arena');
+            updateBookmarkButton(url);
+        }
+
+        function updateNavButtons() {
+            document.getElementById('btnBack').disabled = appData.navIndex <= 0;
+            document.getElementById('btnForward').disabled = appData.navIndex >= appData.navigationHistory.length -
+                1;
+        }
+
+        function goBack() {
+            if (appData.navIndex > 0) {
+                appData.navIndex--;
+                const url = appData.navigationHistory[appData.navIndex];
+                document.getElementById('arenaIframe').src = url;
+                document.getElementById('addressBar').value = url;
+                saveData();
+                updateNavButtons();
+                updateBookmarkButton(url);
+            }
+        }
+
+        function goForward() {
+            if (appData.navIndex < appData.navigationHistory.length - 1) {
+                appData.navIndex++;
+                const url = appData.navigationHistory[appData.navIndex];
+                document.getElementById('arenaIframe').src = url;
+                document.getElementById('addressBar').value = url;
+                saveData();
+                updateNavButtons();
+                updateBookmarkButton(url);
+            }
+        }
+
+        function reloadArena() {
+            document.getElementById('arenaIframe').src = document.getElementById('arenaIframe').src;
+        }
+
+        // ── BOOKMARKS ─────────────────────────
+        function toggleBookmark() {
+            const url = document.getElementById('addressBar').value;
+            if (!url) return;
+            const existing = appData.bookmarks.findIndex(b => b.url === url);
+            if (existing >= 0) {
+                appData.bookmarks.splice(existing, 1);
+                showToast('🔖 Bookmark removed');
+            } else {
+                const name = prompt('Bookmark name:', url) || url;
+                appData.bookmarks.push({ name, url, createdAt: new Date().toISOString() });
+                showToast('🔖 Bookmarked!');
+            }
+            saveData();
+            updateBookmarkButton(url);
+            refreshBookmarkButtons();
+        }
+
+        function updateBookmarkButton(url) {
+            const btn = document.getElementById('btnBookmark');
+            const isBookmarked = appData.bookmarks.some(b => b.url === url);
+            btn.textContent = isBookmarked ? '★' : '☆';
+            btn.classList.toggle('starred', isBookmarked);
+        }
+
+        function refreshBookmarkButtons() {
+            // Remove old bookmark buttons
+            document.querySelectorAll('.bookmark-dynamic').forEach(b => b.remove());
+            const separator = document.querySelector('.toolbar-separator');
+            appData.bookmarks.slice(0, 5).forEach(b => {
+                const btn = document.createElement('button');
+                btn.className = 'bookmark-btn bookmark-dynamic';
+                btn.textContent = b.name.substring(0, 15);
+                btn.title = b.url;
+                btn.onclick = () => navigateUrl(b.url);
+                separator.after(btn);
+            });
+        }
+
+        // ── CATEGORY LISTS ────────────────────
+        function refreshCategoryLists() {
+            CATEGORIES.forEach(cat => {
+                const listEl = document.getElementById(CATEGORY_META[cat].listId);
+                if (!listEl) return;
+                const platforms = getPlatformsByCategory(cat);
+                if (platforms.length === 0) {
+                    listEl.innerHTML =
+                        '<div style="color:var(--text-muted);padding:20px;text-align:center;">No platforms yet. Add one to start tracking.</div>';
+                } else {
+                    listEl.innerHTML = platforms.map(p => {
+                        const met = p.balance >= p.threshold;
+                        const recent = (p.transactions || []).slice(-3).reverse();
+                        return `
+                  <div class="platform-row">
+                    <div class="platform-info">
+                      <span class="platform-dot" style="background:${p.color};"></span>
+                      <div>
+                        <div class="platform-name">${escHtml(p.name)}</div>
+                        <div class="platform-cat">Threshold: $${p.threshold.toFixed(2)} ${met ? '✅' : '⏳'}</div>
+                      </div>
+                    </div>
+                    <div class="platform-balances">
+                      <span style="color:var(--green);">$${p.balance.toFixed(2)}</span>
+                      <span style="color:var(--yellow);">$${p.pending.toFixed(2)}</span>
+                      <span style="color:var(--blue);">$${p.bonuses.toFixed(2)}</span>
+                    </div>
+                    <div class="platform-action">
+                      ${p.url ? `<button class="btn-xs launch" onclick="navigateUrl('${escHtml(p.url)}')">🚀 Launch</button>` : ''}
+                      <button class="btn-xs" onclick="quickLogForPlatform('${p.id}')">+$</button>
+                      <button class="btn-xs" style="color:var(--red);" onclick="removePlatform('${p.id}')">✕</button>
+                    </div>
+                    ${recent.length ? `<div style="width:100%;font-size:0.7rem;color:var(--text-muted);margin-top:4px;">
+                      ${recent.map(tx => `${tx.type}: $${tx.amount.toFixed(2)}`).join(' · ')}
+                    </div>` : ''}
+                  </div>`;
+                    }).join('');
+                }
+                // Update badge
+                const badge = document.getElementById(CATEGORY_META[cat].badgeId);
+                if (badge) badge.textContent = platforms.length;
+            });
+        }
+
+        function quickLogForPlatform(platformId) {
+            const p = getPlatform(platformId);
+            if (!p) return;
+            const amount = parseFloat(prompt(`Log earnings for ${p.name}:`, ''));
+            if (isNaN(amount) || amount <= 0) return;
+            const type = confirm('Is this completed? (OK = completed, Cancel = pending)') ? 'completed' : 'pending';
+            addTransaction(platformId, amount, type);
+        }
+
+        // ── DASHBOARD ─────────────────────────
+        function refreshDashboard() {
+            const filter = appData.activeTimeFilter;
+            let totalCompleted = 0,
+                totalPending = 0,
+                totalBonuses = 0;
+            appData.platforms.forEach(p => {
+                const e = getFilteredEarnings(p, filter);
+                totalCompleted += e.completed;
+                totalPending += e.pending;
+                totalBonuses += e.bonuses;
+            });
+            document.getElementById('dashCompleted').textContent = '$' + totalCompleted.toFixed(2);
+            document.getElementById('dashPending').textContent = '$' + totalPending.toFixed(2);
+            document.getElementById('dashBonuses').textContent = '$' + totalBonuses.toFixed(2);
+
+            // Platform breakdown
+            const breakdownEl = document.getElementById('platformBreakdownList');
+            breakdownEl.innerHTML = appData.platforms.map(p => {
+                const e = getFilteredEarnings(p, filter);
+                return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #ffffff05;">
+              <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${p.color};margin-right:6px;"></span>${escHtml(p.name)}</span>
+              <span style="font-weight:600;">$${e.total.toFixed(2)}</span>
+            </div>`;
+            }).join('') || '<div style="color:var(--text-muted);">No data</div>';
+
+            drawCharts();
+        }
+
+        function drawCharts() {
+            const dc = document.getElementById('doughnutChart');
+            const bc = document.getElementById('barChart');
+            if (!dc || !bc) return;
+            drawDoughnut(dc.getContext('2d'), dc.parentElement.clientWidth, 120, appData.activeTimeFilter);
+            drawBarChart(bc.getContext('2d'), bc.parentElement.clientWidth, 120);
+        }
+
+        function drawDoughnut(ctx, w, h, filter) {
+            ctx.canvas.width = w;
+            ctx.canvas.height = h;
+            ctx.clearRect(0, 0, w, h);
+            const platforms = appData.platforms;
+            const data = platforms.map(p => getFilteredEarnings(p, filter).total);
+            const total = data.reduce((s, v) => s + v, 0);
+            if (total === 0) {
+                ctx.fillStyle = '#666';
+                ctx.font = '11px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No earnings yet', w / 2, h / 2);
+                return;
+            }
+            const cx = 45,
+                cy = h / 2,
+                r = 38,
+                ir = 22;
+            let angle = -Math.PI / 2;
+            data.forEach((v, i) => {
+                if (v === 0) return;
+                const slice = (v / total) * Math.PI * 2;
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, angle, angle + slice);
+                ctx.arc(cx, cy, ir, angle + slice, angle, true);
+                ctx.closePath();
+                ctx.fillStyle = platforms[i].color;
+                ctx.fill();
+                angle += slice;
+            });
+            let ly = 8;
+            platforms.forEach((p, i) => {
+                if (data[i] === 0) return;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(w - 100, ly, 8, 8);
+                ctx.fillStyle = '#d4d4d4';
+                ctx.font = '9px Inter, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(`${p.name}: $${data[i].toFixed(2)}`, w - 88, ly + 8);
+                ly += 14;
+            });
+        }
+
+        function drawBarChart(ctx, w, h) {
+            ctx.canvas.width = w;
+            ctx.canvas.height = h;
+            ctx.clearRect(0, 0, w, h);
+            const days = 7;
+            const aggregated = [];
+            const now = new Date();
+            for (let i = days - 1; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+                const ds = new Date(d);
+                const de = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+                let total = 0;
+                appData.platforms.forEach(p => {
+                    (p.transactions || []).forEach(t => {
+                        const td = new Date(t.date);
+                        if (td >= ds && td < de) total += t.amount;
+                    });
+                });
+                aggregated.push({ label: d.toLocaleDateString('en-US', { weekday: 'short' }), total });
+            }
+            const max = Math.max(...aggregated.map(d => d.total), 1);
+            const bw = (w - 50) / days - 4;
+            const bottom = h - 16,
+                top = 10;
+            const ch = bottom - top;
+            ctx.strokeStyle = '#333';
+            ctx.beginPath();
+            ctx.moveTo(30, top);
+            ctx.lineTo(30, bottom);
+            ctx.lineTo(w - 8, bottom);
+            ctx.stroke();
+            aggregated.forEach((d, i) => {
+                const x = 33 + i * ((w - 50) / days);
+                const bh = (d.total / max) * ch;
+                const y = bottom - bh;
+                const grad = ctx.createLinearGradient(x, y, x, bottom);
+                grad.addColorStop(0, '#ff6b35');
+                grad.addColorStop(1, '#ff6b3511');
+                ctx.fillStyle = grad;
+                ctx.fillRect(x, y, bw, bh);
+                ctx.fillStyle = '#888';
+                ctx.font = '8px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(d.label, x + bw / 2, bottom + 10);
+                if (d.total > 0) {
+                    ctx.fillStyle = '#d4d4d4';
+                    ctx.fillText('$' + d.total.toFixed(1), x + bw / 2, y - 3);
+                }
+            });
+        }
+
+        // ── STATUS BAR ────────────────────────
+        function refreshStatusBar() {
+            const calc = (f) => appData.platforms.reduce((s, p) => s + getFilteredEarnings(p, f).total, 0);
+            document.getElementById('statusToday').textContent = '$' + calc('today').toFixed(2);
+            document.getElementById('statusWeek').textContent = '$' + calc('week').toFixed(2);
+            document.getElementById('statusMonth').textContent = '$' + calc('month').toFixed(2);
+            document.getElementById('statusTotal').textContent = '$' + appData.platforms.reduce((s, p) => s + p
+                .balance + p.pending + p.bonuses, 0).toFixed(2);
+            document.getElementById('statusPlatforms').textContent = appData.platforms.length + ' platforms';
+            document.getElementById('badgeTotal').textContent = '$' + appData.platforms.reduce((s, p) => s + p.balance +
+                p.pending + p.bonuses, 0).toFixed(0);
+        }
+
+        // ── REFRESH ALL ───────────────────────
+        function refreshAll() {
+            refreshQuicklogSelect();
+            refreshCategoryLists();
+            refreshDashboard();
+            refreshStatusBar();
+            updateNavButtons();
+            refreshBookmarkButtons();
+            const currentUrl = document.getElementById('addressBar').value;
+            updateBookmarkButton(currentUrl);
+        }
+
+        // ── IMPORT / EXPORT ───────────────────
+        function exportAllData() {
             const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1121,37 +1464,34 @@
             showToast('📥 Data exported');
         }
 
-        function importData(event) {
+        function importAllData(event) {
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const imported = JSON.parse(e.target.result);
-                    if (!imported.platforms || !Array.isArray(imported.platforms)) {
-                        throw new Error('Invalid format');
-                    }
-                    if (!confirm(
-                            `Import ${imported.platforms.length} platform(s)? This will replace current data.`
-                            )) return;
-                    appData = imported;
-                    // Ensure all platforms have required fields
+                    if (!imported.platforms) throw new Error('Invalid format');
+                    if (!confirm(`Import ${imported.platforms.length} platforms? This replaces current data.`))
+                        return;
+                    appData = { ...getDefaultData(), ...imported };
                     appData.platforms = appData.platforms.map(p => ({
-                        id: p.id || 'platform_' + Date.now() + Math.random().toString(36).substr(
-                            2, 5),
+                        id: p.id || 'p_' + Date.now(),
                         name: p.name || 'Unknown',
+                        category: p.category || 'survey',
                         url: p.url || '',
-                        threshold: p.threshold ?? 10.00,
-                        color: p.color || getRandomColor(),
+                        threshold: p.threshold ?? 10,
+                        color: p.color || '#4ade80',
                         balance: p.balance ?? 0,
                         pending: p.pending ?? 0,
                         bonuses: p.bonuses ?? 0,
                         transactions: p.transactions || [],
                         createdAt: p.createdAt || new Date().toISOString(),
                     }));
-                    saveData(appData);
-                    renderAll();
-                    showToast('📤 Data imported successfully');
+                    saveData();
+                    refreshAll();
+                    navigateTo('arena');
+                    showToast('📤 Data imported');
                 } catch (err) {
                     showToast('⚠️ Invalid backup file');
                 }
@@ -1160,55 +1500,148 @@
             event.target.value = '';
         }
 
-        function escapeHtml(str) {
+        function resetAllData() {
+            if (!confirm('Delete ALL data? This cannot be undone.')) return;
+            if (!confirm('Are you absolutely sure? Export a backup first if needed.')) return;
+            localStorage.removeItem(STORAGE_KEY);
+            appData = getDefaultData();
+            saveData();
+            refreshAll();
+            navigateTo('arena');
+            document.getElementById('arenaIframe').src = 'about:blank';
+            document.getElementById('addressBar').value = appData.settings.defaultUrl;
+            showToast('🗑️ All data reset');
+        }
+
+        function escHtml(str) {
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
         }
 
-        // ── EVENT LISTENERS ────────────────────
-        document.getElementById('timeFilters').addEventListener('click', function(e) {
-            if (e.target.classList.contains('time-btn')) {
-                document.querySelectorAll('.time-btn').forEach(b => b.classList.remove(
-                    'active-filter'));
-                e.target.classList.add('active-filter');
-                activeTimeFilter = e.target.dataset.filter;
-                renderDashboard();
-                renderCharts();
-            }
-        });
+        // ── SIDEBAR RESIZING ──────────────────
+        function initSidebarResizer() {
+            const sidebar = document.getElementById('sidebar');
+            const resizer = document.getElementById('sidebarResizer');
+            let isResizing = false;
+            let startX, startWidth;
 
-        // Close modal on overlay click
-        document.getElementById('addPlatformModal').addEventListener('click', function(e) {
-            if (e.target === this) closeAddPlatformModal();
-        });
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                startX = e.clientX;
+                startWidth = sidebar.offsetWidth;
+                resizer.classList.add('active');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
 
-        // Keyboard shortcut
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeAddPlatformModal();
-        });
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+                const diff = e.clientX - startX;
+                let newWidth = startWidth + diff;
+                newWidth = Math.max(160, Math.min(320, newWidth));
+                sidebar.style.width = newWidth + 'px';
+                appData.settings.sidebarWidth = newWidth;
+            });
 
-        // Handle window resize for charts
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                if (chartInstances.doughnut) chartInstances.doughnut.destroy();
-                if (chartInstances.bar) chartInstances.bar.destroy();
-                chartInstances = {};
-                renderCharts();
-            }, 250);
-        });
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    resizer.classList.remove('active');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                    saveData();
+                }
+            });
 
-        // ── INIT ───────────────────────────────
+            // Set initial width
+            sidebar.style.width = (appData.settings.sidebarWidth || 220) + 'px';
+        }
+
+        // ── EVENT LISTENERS ───────────────────
+        function initEventListeners() {
+            // Sidebar navigation
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const view = item.dataset.view;
+                    if (view) navigateTo(view);
+                });
+            });
+
+            // Toolbar buttons
+            document.getElementById('btnBack').addEventListener('click', goBack);
+            document.getElementById('btnForward').addEventListener('click', goForward);
+            document.getElementById('btnReload').addEventListener('click', reloadArena);
+            document.getElementById('btnGo').addEventListener('click', () => {
+                navigateUrl(document.getElementById('addressBar').value);
+            });
+            document.getElementById('btnBookmark').addEventListener('click', toggleBookmark);
+            document.getElementById('btnQuickLog').addEventListener('click', () => {
+                document.getElementById('quicklogAmount').focus();
+            });
+
+            // Address bar
+            document.getElementById('addressBar').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') navigateUrl(e.target.value);
+            });
+
+            // Time filters
+            document.getElementById('timeFilters').addEventListener('click', (e) => {
+                if (e.target.classList.contains('time-btn')) {
+                    document.querySelectorAll('#timeFilters .time-btn').forEach(b => b.classList
+                        .remove('active'));
+                    e.target.classList.add('active');
+                    appData.activeTimeFilter = e.target.dataset.filter;
+                    saveData();
+                    refreshDashboard();
+                }
+            });
+
+            // Settings
+            const settingUrl = document.getElementById('settingDefaultUrl');
+            settingUrl.value = appData.settings.defaultUrl;
+            settingUrl.addEventListener('change', () => {
+                appData.settings.defaultUrl = settingUrl.value;
+                saveData();
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    if (e.key === 'l') {
+                        e.preventDefault();
+                        document.getElementById('addressBar').focus();
+                        document.getElementById('addressBar').select();
+                    }
+                    if (e.key === 's') {
+                        e.preventDefault();
+                        exportAllData();
+                    }
+                }
+            });
+        }
+
+        // ── INIT ──────────────────────────────
         function init() {
-            renderAll();
-            console.log('📄 Paper Chaser initialized');
+            initSidebarResizer();
+            initEventListeners();
+            // Set initial address bar
+            document.getElementById('addressBar').value = appData.settings.defaultUrl;
+            // Load initial view
+            navigateTo(appData.activeView);
+            // Set active time filter button
+            const activeBtn = document.querySelector(`#timeFilters .time-btn[data-filter="${appData.activeTimeFilter}"]`);
+            if (activeBtn) {
+                document.querySelectorAll('#timeFilters .time-btn').forEach(b => b.classList.remove('active'));
+                activeBtn.classList.add('active');
+            }
+            refreshAll();
+            updateNavButtons();
+            console.log('📄 Paper Chaser Shell initialized');
             console.log('   Platforms:', appData.platforms.length);
-            console.log('   Total earnings: $' + appData.platforms.reduce((s, p) => s + p.balance + p.pending + p
-                .bonuses, 0).toFixed(2));
-            console.log('   Data stored in localStorage:', STORAGE_KEY);
-            console.log('   🏟️ The arena is ready.');
+            console.log('   Views: Arena | Dashboard | Surveys | Passive | Click Work | Video | Cashback | Receipts | Settings');
+            console.log('   Data:', STORAGE_KEY, 'in localStorage');
+            console.log('   🏟️ The shell is ready.');
         }
 
         init();
