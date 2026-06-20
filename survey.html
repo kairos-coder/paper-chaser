@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Chaser · Survey Shell</title>
+    <style>
+        :root {
+            --bg: #0d0d0d;
+            --surface: #161616;
+            --surface2: #1e1e1e;
+            --surface3: #262626;
+            --border: #2a2a2a;
+            --border-light: #333;
+            --text: #d4d4d4;
+            --text-secondary: #888;
+            --text-muted: #666;
+            --accent: #06b6d4;
+            --accent-glow: #06b6d422;
+            --green: #4ade80;
+            --green-dim: #4ade8033;
+            --yellow: #fbbf24;
+            --yellow-dim: #fbbf2433;
+            --blue: #60a5fa;
+            --red: #ef4444;
+            --radius: 8px;
+            --radius-sm: 5px;
+            --transition: 0.18s ease;
+            --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html, body { height:100%; overflow:hidden; }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── TITLE BAR ─────────────────────── */
+        .titlebar {
+            height: 36px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 8px;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .titlebar-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+        .dot-red { background: #ff5f57; }
+        .dot-yellow { background: #febc2e; }
+        .dot-green { background: #28c840; }
+        .titlebar-title {
+            font-weight: 600; font-size: 0.82rem; color: var(--text);
+            margin-left: 4px;
+        }
+        .titlebar-title span { color: var(--accent); }
+        .titlebar-spacer { flex:1; }
+        .titlebar-platform {
+            font-size: 0.7rem; color: var(--text-secondary);
+            background: var(--surface2); padding: 3px 10px; border-radius: 12px;
+        }
+
+        /* ── TOOLBAR ───────────────────────── */
+        .toolbar {
+            height: 38px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+        .tb-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            width: 28px; height: 26px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+        .tb-btn:hover { background: var(--surface3); color: var(--text); border-color: var(--border-light); }
+        .tb-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .address-wrap {
+            flex: 1; display: flex; align-items: center; position: relative;
+        }
+        .address-bar {
+            width: 100%; height: 26px;
+            background: var(--bg);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            padding: 0 8px;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            outline: none;
+            transition: border-color var(--transition);
+        }
+        .address-bar:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+        .tb-sep {
+            width: 1px; height: 16px; background: var(--border-light); flex-shrink: 0; margin: 0 3px;
+        }
+        .platform-chip {
+            background: var(--surface3);
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            padding: 3px 9px;
+            border-radius: 13px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            transition: all var(--transition);
+            font-family: var(--font);
+        }
+        .platform-chip:hover { background: var(--border-light); color: var(--text); }
+        .platform-chip.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+
+        /* ── VIEWPORT ──────────────────────── */
+        .viewport {
+            flex: 1;
+            position: relative;
+            background: #000;
+        }
+        .viewport iframe {
+            width: 100%; height: 100%; border: none; background: #fff;
+        }
+
+        /* ── QUICK LOG ─────────────────────── */
+        .quicklog {
+            height: 44px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .quicklog-label {
+            font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.04em; font-weight: 600; flex-shrink: 0;
+        }
+        .quicklog-input {
+            width: 80px; height: 26px;
+            background: var(--bg); border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm); color: var(--text);
+            padding: 0 7px; font-size: 0.78rem; font-family: var(--font); outline: none;
+        }
+        .quicklog-input:focus { border-color: var(--accent); }
+        .ql-btn {
+            height: 26px; padding: 0 10px; border-radius: var(--radius-sm);
+            cursor: pointer; font-size: 0.74rem; font-weight: 500;
+            font-family: var(--font); border: 1px solid var(--border-light);
+            transition: all var(--transition); white-space: nowrap;
+        }
+        .ql-done { background: var(--green-dim); color: var(--green); border-color: var(--green); }
+        .ql-done:hover { background: var(--green); color: #000; }
+        .ql-pending { background: var(--yellow-dim); color: var(--yellow); border-color: var(--yellow); }
+        .ql-pending:hover { background: var(--yellow); color: #000; }
+        .ql-bonus { background: var(--blue); color: #000; border-color: var(--blue); opacity: 0.3; }
+        .ql-bonus:hover { opacity: 0.6; }
+
+        /* ── STATUS BAR ────────────────────── */
+        .statusbar {
+            height: 28px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 12px;
+            flex-shrink: 0;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+        .status-value { font-weight: 600; color: var(--text); }
+        .status-sep { width: 1px; height: 12px; background: var(--border-light); }
+
+        /* ── TOAST ─────────────────────────── */
+        .toast-container {
+            position: fixed; bottom: 40px; right: 12px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .toast {
+            background: var(--surface2); border: 1px solid var(--border-light);
+            padding: 7px 14px; border-radius: var(--radius-sm);
+            font-size: 0.78rem; animation: slideUp 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+        }
+        @keyframes slideUp {
+            from { opacity:0; transform:translateY(20px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+
+        ::-webkit-scrollbar { width:5px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:var(--border-light); border-radius:3px; }
+    </style>
+</head>
+<body>
+
+    <!-- ═══ TITLE BAR ═══ -->
+    <div class="titlebar">
+        <span class="titlebar-dot dot-red" onclick="window.close()" style="cursor:pointer;"></span>
+        <span class="titlebar-dot dot-yellow"></span>
+        <span class="titlebar-dot dot-green"></span>
+        <span class="titlebar-title">📝 Survey <span>Shell</span></span>
+        <span class="titlebar-spacer"></span>
+        <span class="titlebar-platform" id="activePlatformLabel">Swagbucks</span>
+    </div>
+
+    <!-- ═══ TOOLBAR ═══ -->
+    <div class="toolbar">
+        <button class="tb-btn" id="btnBack" disabled title="Back">◀</button>
+        <button class="tb-btn" id="btnForward" disabled title="Forward">▶</button>
+        <button class="tb-btn" id="btnReload" title="Reload">↻</button>
+        <button class="tb-btn" id="btnHome" title="Home">⌂</button>
+        <div class="address-wrap">
+            <input type="text" class="address-bar" id="addressBar" 
+                   placeholder="Navigate to survey platform..." 
+                   value="https://www.swagbucks.com/surveys">
+        </div>
+        <button class="tb-btn" id="btnGo" title="Go">→</button>
+        <span class="tb-sep"></span>
+        <button class="platform-chip active" data-platform="swagbucks" data-url="https://www.swagbucks.com/surveys">Swagbucks</button>
+        <button class="platform-chip" data-platform="surveyjunkie" data-url="https://www.surveyjunkie.com">Survey Junkie</button>
+        <button class="platform-chip" data-platform="inboxdollars" data-url="https://www.inboxdollars.com">InboxDollars</button>
+        <button class="platform-chip" data-platform="prolific" data-url="https://www.prolific.com">Prolific</button>
+    </div>
+
+    <!-- ═══ VIEWPORT ═══ -->
+    <div class="viewport">
+        <iframe id="surveyIframe"
+                src="about:blank"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
+                loading="lazy"
+                title="Survey Arena">
+        </iframe>
+    </div>
+
+    <!-- ═══ QUICK LOG ═══ -->
+    <div class="quicklog">
+        <span class="quicklog-label">Log Earning</span>
+        <span style="font-size:0.72rem;color:var(--text-secondary);" id="quicklogPlatformName">Swagbucks</span>
+        <input type="number" class="quicklog-input" id="quicklogAmount" placeholder="Amount" step="0.01" min="0.01">
+        <button class="ql-btn ql-done" onclick="logEarning('completed')">✓ Completed</button>
+        <button class="ql-btn ql-pending" onclick="logEarning('pending')">⏳ Pending</button>
+        <button class="ql-btn ql-bonus" onclick="logEarning('bonus')">🎁 Bonus</button>
+    </div>
+
+    <!-- ═══ STATUS BAR ═══ -->
+    <div class="statusbar">
+        <span><span class="status-dot" style="background:var(--green);"></span> Balance: <span class="status-value" id="statusBalance">$0.00</span></span>
+        <span class="status-sep"></span>
+        <span>Pending: <span class="status-value" id="statusPending" style="color:var(--yellow);">$0.00</span></span>
+        <span class="status-sep"></span>
+        <span>Threshold: <span class="status-value" id="statusThreshold">$10.00</span></span>
+        <span class="status-sep"></span>
+        <span id="statusThresholdMet" style="color:var(--yellow);">⏳ not met</span>
+        <span style="flex:1;"></span>
+        <span style="font-size:0.65rem;color:var(--text-muted);">← Back to <a href="index.html" style="color:var(--accent);">Dashboard</a></span>
+    </div>
+
+    <!-- TOASTS -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ══════════════════════════════════════
+        // SURVEY SHELL ENGINE
+        // ══════════════════════════════════════
+
+        const STORAGE_KEY = 'paperchaser_survey_shell';
+
+        // Platform definitions
+        const PLATFORMS = {
+            swagbucks: { name: 'Swagbucks', url: 'https://www.swagbucks.com/surveys', threshold: 10, color: '#4ade80' },
+            surveyjunkie: { name: 'Survey Junkie', url: 'https://www.surveyjunkie.com', threshold: 10, color: '#06b6d4' },
+            inboxdollars: { name: 'InboxDollars', url: 'https://www.inboxdollars.com', threshold: 30, color: '#8b5cf6' },
+            prolific: { name: 'Prolific', url: 'https://www.prolific.com', threshold: 5, color: '#60a5fa' },
+        };
+
+        function getDefaultState() {
+            return {
+                activePlatform: 'swagbucks',
+                history: [],
+                historyIndex: -1,
+                platforms: {},
+            };
+        }
+
+        // Initialize platform data
+        function initPlatformData() {
+            const data = {};
+            Object.keys(PLATFORMS).forEach(key => {
+                data[key] = {
+                    balance: 0,
+                    pending: 0,
+                    bonuses: 0,
+                    transactions: [],
+                };
+            });
+            return data;
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const state = JSON.parse(raw);
+                    // Merge with defaults
+                    state.platforms = state.platforms || initPlatformData();
+                    Object.keys(PLATFORMS).forEach(key => {
+                        if (!state.platforms[key]) {
+                            state.platforms[key] = { balance: 0, pending: 0, bonuses: 0, transactions: [] };
+                        }
+                    });
+                    state.history = state.history || [];
+                    state.historyIndex = state.historyIndex ?? -1;
+                    state.activePlatform = state.activePlatform || 'swagbucks';
+                    return state;
+                }
+            } catch(e) { console.error('Load error:', e); }
+            const def = getDefaultState();
+            def.platforms = initPlatformData();
+            return def;
+        }
+
+        function saveState() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {
+                showToast('⚠️ Storage full');
+            }
+        }
+
+        let state = loadState();
+
+        // ── TOAST ────────────────────────────
+        function showToast(msg) {
+            const container = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            container.appendChild(t);
+            setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; 
+                setTimeout(() => t.remove(), 300); }, 2500);
+        }
+
+        // ── NAVIGATION ────────────────────────
+        function navigate(url, addToHistory = true) {
+            if (!url) return;
+            if (!url.startsWith('http')) url = 'https://' + url;
+            
+            const iframe = document.getElementById('surveyIframe');
+            iframe.src = url;
+            document.getElementById('addressBar').value = url;
+            
+            if (addToHistory) {
+                // Trim future history if we're not at the end
+                if (state.historyIndex < state.history.length - 1) {
+                    state.history = state.history.slice(0, state.historyIndex + 1);
+                }
+                state.history.push(url);
+                state.historyIndex = state.history.length - 1;
+                saveState();
+            }
+            updateNavButtons();
+        }
+
+        function goBack() {
+            if (state.historyIndex > 0) {
+                state.historyIndex--;
+                const url = state.history[state.historyIndex];
+                navigate(url, false);
+                saveState();
+            }
+        }
+
+        function goForward() {
+            if (state.historyIndex < state.history.length - 1) {
+                state.historyIndex++;
+                const url = state.history[state.historyIndex];
+                navigate(url, false);
+                saveState();
+            }
+        }
+
+        function goHome() {
+            const platform = PLATFORMS[state.activePlatform];
+            navigate(platform.url);
+            document.getElementById('addressBar').value = platform.url;
+        }
+
+        function reload() {
+            const iframe = document.getElementById('surveyIframe');
+            iframe.src = iframe.src;
+        }
+
+        function updateNavButtons() {
+            document.getElementById('btnBack').disabled = state.historyIndex <= 0;
+            document.getElementById('btnForward').disabled = state.historyIndex >= state.history.length - 1;
+        }
+
+        // ── PLATFORM SWITCHING ───────────────
+        function switchPlatform(platformKey) {
+            state.activePlatform = platformKey;
+            saveState();
+            
+            // Update chips
+            document.querySelectorAll('.platform-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.platform === platformKey);
+            });
+            
+            // Update labels
+            const platform = PLATFORMS[platformKey];
+            document.getElementById('activePlatformLabel').textContent = platform.name;
+            document.getElementById('quicklogPlatformName').textContent = platform.name;
+            
+            // Navigate to platform URL
+            navigate(platform.url);
+            
+            // Update status bar
+            updateStatusBar();
+        }
+
+        // ── EARNINGS LOGGING ─────────────────
+        function logEarning(type) {
+            const input = document.getElementById('quicklogAmount');
+            const amount = parseFloat(input.value);
+            if (isNaN(amount) || amount <= 0) {
+                showToast('⚠️ Enter a valid amount');
+                return;
+            }
+            
+            const platformKey = state.activePlatform;
+            const platformData = state.platforms[platformKey];
+            const platform = PLATFORMS[platformKey];
+            
+            const tx = {
+                id: 'tx_' + Date.now(),
+                amount: amount,
+                type: type,
+                date: new Date().toISOString(),
+            };
+            
+            platformData.transactions.push(tx);
+            if (type === 'completed') platformData.balance += amount;
+            if (type === 'pending') platformData.pending += amount;
+            if (type === 'bonus') platformData.bonuses += amount;
+            
+            saveState();
+            updateStatusBar();
+            input.value = '';
+            input.focus();
+            
+            const typeEmoji = type === 'completed' ? '✅' : type === 'pending' ? '⏳' : '🎁';
+            showToast(`${typeEmoji} $${amount.toFixed(2)} logged for ${platform.name}`);
+            
+            // Also sync to main Paper Chaser data if available
+            syncToMainDashboard(platformKey, amount, type);
+        }
+
+        function syncToMainDashboard(platformKey, amount, type) {
+            try {
+                const mainData = localStorage.getItem('paperchaser_shell_v1');
+                if (!mainData) return;
+                const data = JSON.parse(mainData);
+                const platformName = PLATFORMS[platformKey].name;
+                const platform = data.platforms.find(p => 
+                    p.name.toLowerCase() === platformName.toLowerCase() && p.category === 'survey'
+                );
+                if (platform) {
+                    const tx = {
+                        id: 'tx_' + Date.now(),
+                        amount: amount,
+                        type: type,
+                        date: new Date().toISOString(),
+                    };
+                    platform.transactions.push(tx);
+                    if (type === 'completed') platform.balance += amount;
+                    if (type === 'pending') platform.pending += amount;
+                    if (type === 'bonus') platform.bonuses += amount;
+                    localStorage.setItem('paperchaser_shell_v1', JSON.stringify(data));
+                }
+            } catch(e) {
+                // Silently fail — main dashboard sync is best-effort
+            }
+        }
+
+        // ── STATUS BAR ────────────────────────
+        function updateStatusBar() {
+            const platformKey = state.activePlatform;
+            const pd = state.platforms[platformKey];
+            const platform = PLATFORMS[platformKey];
+            
+            document.getElementById('statusBalance').textContent = '$' + pd.balance.toFixed(2);
+            document.getElementById('statusPending').textContent = '$' + pd.pending.toFixed(2);
+            document.getElementById('statusThreshold').textContent = '$' + platform.threshold.toFixed(2);
+            
+            const met = pd.balance >= platform.threshold;
+            const metEl = document.getElementById('statusThresholdMet');
+            metEl.textContent = met ? '✅ threshold met!' : '⏳ not met';
+            metEl.style.color = met ? 'var(--green)' : 'var(--yellow)';
+        }
+
+        // ── INIT ──────────────────────────────
+        function init() {
+            // Set up platform chips
+            document.querySelectorAll('.platform-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    switchPlatform(chip.dataset.platform);
+                });
+            });
+            
+            // Toolbar buttons
+            document.getElementById('btnBack').addEventListener('click', goBack);
+            document.getElementById('btnForward').addEventListener('click', goForward);
+            document.getElementById('btnReload').addEventListener('click', reload);
+            document.getElementById('btnHome').addEventListener('click', goHome);
+            document.getElementById('btnGo').addEventListener('click', () => {
+                navigate(document.getElementById('addressBar').value);
+            });
+            
+            // Address bar
+            document.getElementById('addressBar').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') navigate(e.target.value);
+            });
+            
+            // Quicklog input
+            document.getElementById('quicklogAmount').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') logEarning('completed');
+            });
+            
+            // Load initial platform
+            switchPlatform(state.activePlatform);
+            
+            // If there's history, go to the last position
+            if (state.history.length > 0 && state.historyIndex >= 0) {
+                const url = state.history[state.historyIndex];
+                document.getElementById('surveyIframe').src = url;
+                document.getElementById('addressBar').value = url;
+            }
+            
+            updateNavButtons();
+            updateStatusBar();
+            
+            console.log('📝 Survey Shell ready');
+            console.log('   Platforms:', Object.keys(PLATFORMS).join(', '));
+            console.log('   Active:', PLATFORMS[state.activePlatform].name);
+        }
+
+        init();
+    </script>
+</body>
+</html>
